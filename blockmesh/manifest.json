@@ -1,0 +1,48 @@
+{
+   "action": {
+      "default_icon": {
+         "16": "assets/blockmesh-icon-transparent-600x600.png",
+         "19": "assets/blockmesh-icon-transparent-600x600.png",
+         "32": "assets/blockmesh-icon-transparent-600x600.png",
+         "38": "assets/blockmesh-icon-transparent-600x600.png"
+      },
+      "default_popup": "js/popup.html",
+      "default_title": "BlockMesh Network",
+      "show_matches": [ "*://*" ]
+   },
+   "author": "ohaddahan@blockmesh.xyz",
+   "background": {
+      "service_worker": "js/background.js",
+      "type": "module"
+   },
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+   },
+   "description": "BlockMesh Network allows you to generate passive income from your excessive bandwidth",
+   "externally_connectable": {
+      "matches": [ "http://127.0.0.1/*", "http://localhost/*", "*://*.blockmesh.xyz/*" ]
+   },
+   "homepage_url": "https://blockmesh.xyz",
+   "host_permissions": [ "https://*/*", "http://*/*" ],
+   "icons": {
+      "128": "assets/blockmesh-icon-transparent-600x600.png",
+      "16": "assets/blockmesh-icon-transparent-600x600.png",
+      "32": "assets/blockmesh-icon-transparent-600x600.png",
+      "48": "assets/blockmesh-icon-transparent-600x600.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlZyP5wcy3A2aEbFnNYSkx+DA0Bano9gWCdWsPmx3PUeR+ltRxO2CHImrKhrfELXmdQOsE43vEz/xoleOUhhCyOavn+PwwtVsspgzKRCVry2gyAKu4sZK3LL1AFwF1XZiLgtYdURuCebWwtw36+nQHvymXg+hqnHFb8qbnSN5fzTiwZenapNdSoBohdPniXtjz6L+3Dl4bloXnVk3hzR104CjaSa3M57Hd+kG1e9v/eB1fzTnMg6qc6tOPM6tmirwSt0UGrTMWMdeVJ5HzN925HCDpd/+15vTR0hQGcGd5Z71mOxmf5RwNTEXY/8zW28JQ/qZnzulffAApKLR5wVguQIDAQAB",
+   "manifest_version": 3,
+   "minimum_chrome_version": "110",
+   "name": "BlockMesh Network",
+   "options_ui": {
+      "page": "js/options.html"
+   },
+   "permissions": [ "alarms", "storage", "background" ],
+   "short_name": "BlockMesh",
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.0.170",
+   "web_accessible_resources": [ {
+      "matches": [ "\u003Call_urls>" ],
+      "resources": [ "js/wasm/blockmesh_ext.js", "js/wasm/blockmesh_ext.wasm" ]
+   } ]
+}
