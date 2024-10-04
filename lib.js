@@ -7,14 +7,22 @@ const puppeteerStealth = StealthPlugin();
 puppeteer.use(puppeteerStealth);
 // BLOCKMESH
 const BLOCKMESH_EXTENSION_URL = `chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html`;
+const GRADIENT_EXTENSION_URL = `chrome-extension://caacbgbklghmpodbdafajbgdnegacfmo/popup.html`;
 const DAWN_EXTENSION_URL = `chrome-extension://fpdkjdnhkakefebpekbdhillbhonfjjp/signin.html`;
 
 const BLOCKMESH_USER_INPUT = `::-p-xpath(//input[@name="email"])`;
 const BLOCKMESH_PASS_INPUT = '::-p-xpath(//input[@name="password"])';
 const DAWN_USER_INPUT = `::-p-xpath(//input[@name="email"])`;
 const DAWN_PASS_INPUT = '::-p-xpath(//input[@name="password"])';
+const GRA_USER_INPUT = `::-p-xpath(//input[@placeholder="Enter Email"])`;
+const GRA_PASS_INPUT = '::-p-xpath(//input[@type="password"])';
 
-async function loginBlockmesh(page, {user, pass}) {
+const pathToBlockmesh = path.join(process.cwd(), "blockmesh");
+const pathToGradient = path.join(process.cwd(), "grandient");
+const pathToDawn = path.join(process.cwd(), "dawn");
+
+async function loginBlockmesh({user, pass}) {
+  const {browser, page} = await loginAndOpenExtension({user, pass}, pathToBlockmesh);
   await page.goto(BLOCKMESH_EXTENSION_URL, {
     timeout: 60000,
     waitUntil: "networkidle2",
@@ -27,82 +35,103 @@ async function loginBlockmesh(page, {user, pass}) {
   await frame.waitForSelector(BLOCKMESH_PASS_INPUT);
   // press enter
   await page.keyboard.press("Enter");
-  return frame;
+  await blockMeshFrame.waitForSelector(".pulse", {timeout: 30000});
+  console.log(
+      `Start Blockmesh extension success for user`,
+      user
+   );
+  return {browser, page};
 }
-async function loginDawn(page) {
-  await page.goto(DAWN_EXTENSION_URL, {
+
+async function loginGradient({user, pass}) {
+  const {browser, page} = await loginAndOpenExtension({user, pass}, pathToGradient);
+  await page.goto(GRADIENT_EXTENSION_URL, {
     timeout: 60000,
     waitUntil: "networkidle2",
   });
-  await page.waitForSelector(DAWN_USER_INPUT);
-  await page.type(DAWN_USER_INPUT, USER);
-  await page.type(DAWN_PASS_INPUT, PASS);
-  await page.waitForSelector(DAWN_PASS_INPUT);
+  const page2 = (await browser.pages())[1];
+  await page2.waitForSelector(GRA_USER_INPUT);
+  await page2.type(GRA_USER_INPUT, user);
+  await page2.type(GRA_PASS_INPUT, pass);
+  await page2.waitForSelector(GRA_PASS_INPUT);
   // press enter
-  await page.keyboard.press("Enter");
+  await page2.keyboard.press("Enter");
+  await new Promise(_func=> setTimeout(_func, 10000));
+  await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+  await page2.close();
+  await page.reload();
+  await new Promise(_func=> setTimeout(_func, 5000));
+  await page.click('button');
+  await new Promise(_func=> setTimeout(_func, 15000));
+  await page.reload();
+  console.log(
+      `Start Gradient extension success for user`,
+      user
+   );
+  return {browser, page};
 }
 
-async function loginAndOpenExtension(user) {
-  const pathToBlockmesh = path.join(process.cwd(), "blockmesh");
-  const pathToDawn = path.join(process.cwd(), "dawn");
 
+async function loginDawn({user, pass}) {
+  const {browser, page} = await loginAndOpenExtension({user, pass}, pathToDawn);
+  const page2 = await browser.newPage();
+  await page2.goto(DAWN_EXTENSION_URL, {
+    timeout: 60000,
+    waitUntil: "networkidle2",
+  });
+  await page2.waitForSelector(DAWN_USER_INPUT);
+  await page2.type(DAWN_USER_INPUT, user);
+  await page2.type(DAWN_PASS_INPUT, pass);
+  await page2.waitForSelector(DAWN_PASS_INPUT);
+  // press enter
+  await page2.keyboard.press("Enter");
+  console.log(
+      `Start Gradient extension success for user`,
+      user
+   );
+  return {browser, page};
+}
+
+async function loginAndOpenExtension(user, path) {
   let proxyHost, proxyPort, proxyUser, proxyPass;
+  
   if (user.proxy) {
     [proxyHost, proxyPort, proxyUser, proxyPass] = user.proxy.split(":");
   }
+  
   args = [
     "--no-sandbox",
     "--no-zygote",
-    `--disable-extensions-except=${pathToBlockmesh}`,
-    `--load-extension=${pathToBlockmesh}`,
+    `--disable-extensions-except=${path}`,
+    `--load-extension=${path}`,
     "--window-size=360,600",
     // '--disable-features=site-per-process',
     // '--site-per-process'
   ];
+  
   if (proxyHost) {
     args.push(`--proxy-server=http://${proxyHost}:${proxyPort}`);
   }
+  
   let browser = await puppeteer.launch({
-    // headless: false,
+    headless: false,
     args,
     // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
     // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
   });
+  
   const page = (await browser.pages())[0]; // <-- bypasses Cloudflare
   await page.setUserAgent(
     `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0`
   );
+  
   if (proxyUser) {
     await page.authenticate({
       username: proxyUser,
       password: proxyPass,
     });
   }
-  try {
-    let blockMeshFrame = await loginBlockmesh(page, user);
-    await blockMeshFrame.waitForSelector(".pulse", {timeout: 30000});
-    console.log(
-      `Start Blockmesh extension success for user`,
-      user.id,
-      user.user
-    );
-
-    // const page2 = await browser.newPage();
-
-    // if (proxyUser) {
-    //   await page.authenticate({
-    //     username: proxyUser,
-    //     password: proxyPass,
-    //   });
-    // }
-    // await loginDawn(page2);
-    return {browser, page};
-  } catch (error) {
-    console.log("🚀 ~ loginAndOpenExtension ~ error:", error);
-    await browser.close();
-    // throw error;d
-    return loginAndOpenExtension(user);
-  }
+  return {browser, page};
 }
 
 const getBlockmeshStatus = async (page, user) => {
@@ -110,6 +139,17 @@ const getBlockmeshStatus = async (page, user) => {
     let frame = await getFrame(page);
     await frame.waitForSelector(".pulse", {timeout: 5000});
     return true;
+  } catch (error) {
+    console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
+    return false;
+  }
+};
+
+
+const getGraStatus = async (page, user) => {
+  try {
+    await page.waitForSelector(".avatar-container", {timeout: 5000});
+    return false;
   } catch (error) {
     console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
     return false;
@@ -133,7 +173,11 @@ const getFrame = async (page) => {
 
 module.exports = {
   loginAndOpenExtension,
+  loginBlockmesh,
+  loginDawn,
+  loginGradient,
   getBlockmeshStatus,
   saveScreenshot,
   getFrame,
+  getGraStatus
 };

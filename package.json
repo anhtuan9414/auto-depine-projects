@@ -4,8 +4,10 @@
   "main": "register.js",
   "scripts": {
     "register": "node --env-file=.env register.js",
-    "start": "node index.js",
-    "dev": "node --env-file=.env index.js"
+    "blockmesh": "node blockmesh.js",
+    "gradient": "node gradient.js",
+    "dev-gradient": "node --env-file=.env gradient.js",
+    "dev-blockmesh": "node --env-file=.env blockmesh.js"
   },
   "author": "",
   "license": "ISC",
