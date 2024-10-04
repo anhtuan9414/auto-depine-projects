@@ -63,7 +63,7 @@ async function loginAndOpenExtension(user) {
     args.push(`--proxy-server=http://${proxyHost}:${proxyPort}`);
   }
   let browser = await puppeteer.launch({
-    headless: false,
+    // headless: false,
     args,
     // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
     // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
