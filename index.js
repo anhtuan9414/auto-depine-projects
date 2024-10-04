@@ -50,7 +50,7 @@ async function main() {
         diconnect[user.id] = 0;
         let status = await getBlockmeshStatus(pages[user.id], user);
         console.log("🚀 ~ getBlockmeshStatus ~ status:", user.id, status);
-        await updateConnectionStatus(user.id, status);
+        // await updateConnectionStatus(user.id, status);
         if (!status) {
           if (diconnect[user.id] === undefined) diconnect[user.id] = 0;
           diconnect[user.id]++;
