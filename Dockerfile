@@ -61,4 +61,4 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Run your application when container launches
-CMD [ "node", "index.js" ]
+CMD [ "npm", "gradient.js" ]
