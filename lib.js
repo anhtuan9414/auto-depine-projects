@@ -62,7 +62,7 @@ async function loginGradient({user, pass}) {
   await page.reload();
   await new Promise(_func=> setTimeout(_func, 5000));
   await page.click('button');
-  await new Promise(_func=> setTimeout(_func, 15000));
+  await new Promise(_func=> setTimeout(_func, 20000));
   await page.reload();
   console.log(
       `Start Gradient extension success for user`,
@@ -149,7 +149,7 @@ const getBlockmeshStatus = async (page, user) => {
 const getGraStatus = async (page, user) => {
   try {
     await page.waitForSelector(".avatar-container", {timeout: 5000});
-    return false;
+    return true;
   } catch (error) {
     console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
     return false;
