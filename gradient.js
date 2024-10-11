@@ -13,7 +13,7 @@ async function main() {
   // let [user, offset] = process.env.GRASS_USER.split("-");
   // let users = await getUsers(user + "@gmail.com", offset);
   let users = [{id: 'Depin', user: process.env.USER, pass: process.env.PASS}];
-  console.log("🚀 ~ main ~ user:", users.length);
+  console.log("🚀 ~ Start Script ~");
   if (!users) {
     await timers.setTimeout(300000);
   }
@@ -21,26 +21,24 @@ async function main() {
   let browsers = {};
   let pages = {};
   let diconnect = {};
+  
   const startExtension = async function (user) {
     let { browser, page: localPage } = await loginGradient(user);
     pages[user.id] = localPage;
     browsers[user.id] = browser;
   };
-  const refreshExtension = async function (user) {
-    if (pages[user.id]) await pages[user.id].reload();
-  };
+  
   const restartExtension = async function (user) {
-    if (browsers[user.id]) {
-      pages[user.id] = undefined;
-      await browsers[user.id].close();
-    }
+    try {
+		if (browsers[user.id]) {
+		  pages[user.id] = undefined;
+		  await browsers[user.id].close();
+		}
+	} catch (error) {
+	   console.log("🚀 ~ Close browser ~ error:", error);
+	}
     await startExtension(user);
   };
-  setInterval(async () => {
-    for (const user of users) {
-      refreshExtension(user);
-    }
-  }, 60 * 60 * 1000);
 
   // Update status
   setInterval(async () => {
@@ -49,20 +47,22 @@ async function main() {
       try {
         diconnect[user.id] = 0;
         let status = await getGraStatus(pages[user.id], user);
-        console.log("🚀 ~ getGraStatus ~ status:", user.id, status);
         // await updateConnectionStatus(user.id, status);
         if (!status) {
+		  console.log("Status: Diconnected!");
           if (diconnect[user.id] === undefined) diconnect[user.id] = 0;
           diconnect[user.id]++;
 		  if (diconnect[user.id] % 5 === 0) {
             restartExtension(user);
           }
-        }
+        } else {
+		  console.log("Status: Connected!");
+		}
       } catch (error) {
         console.log("🚀 ~ setInterval ~ error:", error);
       }
     }
-  }, 120000);
+  }, 60000);
   let chunkUSers = lodash.chunk(users, 5);
   for (const chunk of chunkUSers) {
     await Promise.all(chunk.map(startExtension));

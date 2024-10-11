@@ -58,16 +58,14 @@ async function loginGradient({user, pass}) {
   await page2.keyboard.press("Enter");
   await new Promise(_func=> setTimeout(_func, 10000));
   await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+  console.log('Logged in successfully!')
   await page2.close();
   await page.reload();
   await new Promise(_func=> setTimeout(_func, 5000));
   await page.click('button');
   await new Promise(_func=> setTimeout(_func, 20000));
   await page.reload();
-  console.log(
-      `Start Gradient extension success for user`,
-      user
-   );
+  console.log('Extension is activated!');
   return {browser, page};
 }
 
@@ -102,6 +100,7 @@ async function loginAndOpenExtension(user, path) {
   args = [
     "--no-sandbox",
     "--no-zygote",
+	'--disable-dev-shm-usage',
     `--disable-extensions-except=${path}`,
     `--load-extension=${path}`,
     "--window-size=360,600",
@@ -122,7 +121,7 @@ async function loginAndOpenExtension(user, path) {
   
   const page = (await browser.pages())[0]; // <-- bypasses Cloudflare
   await page.setUserAgent(
-    `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0`
+    `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0`
   );
   
   if (proxyUser) {
@@ -148,7 +147,17 @@ const getBlockmeshStatus = async (page, user) => {
 
 const getGraStatus = async (page, user) => {
   try {
+	await page.reload();
     await page.waitForSelector(".avatar-container", {timeout: 5000});
+	try {
+		let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
+		let element2 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1])');
+		let value = await page.evaluate(el => el.textContent, element);
+		let value2 = await page.evaluate(el => el.textContent, element2);
+		console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value}`);
+	} catch {
+		console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
+	}
     return true;
   } catch (error) {
     console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
