@@ -113,7 +113,7 @@ async function loginAndOpenExtension(user, path) {
   }
   
   let browser = await puppeteer.launch({
-    // headless: false,
+    headless: 'new',
     args,
     // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
     // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
@@ -155,7 +155,7 @@ const getGraStatus = async (page, user) => {
 		let value = await page.evaluate(el => el.textContent, element);
 		let value2 = await page.evaluate(el => el.textContent, element2);
 		console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value}`);
-	} catch {
+	} catch (error) {
 		console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
 	}
     return true;
