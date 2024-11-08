@@ -113,7 +113,7 @@ async function loginAndOpenExtension(user, path) {
   }
   
   let browser = await puppeteer.launch({
-    headless: 'new',
+    headless: true,
     args,
     // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
     // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
