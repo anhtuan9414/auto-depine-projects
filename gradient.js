@@ -42,7 +42,7 @@ async function main() {
       } catch (error) {
         console.log("🚀 ~ setInterval ~ error:", error);
      }
-  },60000);
+  },120000);
 }
 
 main();
