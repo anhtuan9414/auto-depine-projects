@@ -147,10 +147,7 @@ const getBlockmeshStatus = async (page, user) => {
 
 const getGraStatus = async (page, user) => {
   try {
-	await page.goto(GRADIENT_EXTENSION_URL, {
-		timeout: 60000,
-		waitUntil: "networkidle2",
-	});
+	await page.goto(GRADIENT_EXTENSION_URL);
     await page.waitForSelector(".avatar-container", {timeout: 5000});
 	try {
 		let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
