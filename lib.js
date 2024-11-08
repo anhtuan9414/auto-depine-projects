@@ -20,6 +20,7 @@ const GRA_PASS_INPUT = '::-p-xpath(//input[@type="password"])';
 const pathToBlockmesh = path.join(process.cwd(), "blockmesh");
 const pathToGradient = path.join(process.cwd(), "grandient");
 const pathToDawn = path.join(process.cwd(), "dawn");
+const rejectResourceTypes = ['image', 'font'];
 
 async function loginBlockmesh({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToBlockmesh);
@@ -45,6 +46,15 @@ async function loginBlockmesh({user, pass}) {
 
 async function loginGradient({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToGradient);
+  await page.setRequestInterception(true);
+   page.on('request', (req) => {
+		if (
+          rejectResourceTypes.includes(req.resourceType())
+        ) {
+          return req.abort();
+        }
+        return req.continue();
+      });
   await page.goto(GRADIENT_EXTENSION_URL, {
     timeout: 60000,
     waitUntil: "networkidle2",
