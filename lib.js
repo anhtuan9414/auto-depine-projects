@@ -147,7 +147,10 @@ const getBlockmeshStatus = async (page, user) => {
 
 const getGraStatus = async (page, user) => {
   try {
-	await page.reload();
+	await page.goto(GRADIENT_EXTENSION_URL, {
+		timeout: 60000,
+		waitUntil: "networkidle2",
+	});
     await page.waitForSelector(".avatar-container", {timeout: 5000});
 	try {
 		let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
@@ -156,11 +159,11 @@ const getGraStatus = async (page, user) => {
 		let value2 = await page.evaluate(el => el.textContent, element2);
 		console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value}`);
 	} catch (error) {
-		console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
+		console.log("🚀 ~ getGraStatus ~ error:", error);
 	}
     return true;
   } catch (error) {
-    console.log("🚀 ~ getBlockmeshStatus ~ error:", error);
+    console.log("🚀 ~ getGraStatus ~ error:", error);
     return false;
   }
 };

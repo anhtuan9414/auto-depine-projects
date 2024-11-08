@@ -22,6 +22,7 @@ async function main() {
     let { browser, page: localPage1 } = await loginGradient(user);
     localPage = localPage1;
     localBrowser = browser;
+	await localPage1.goto('chrome://extensions/');
   };
   
   await startExtension(user);
@@ -29,18 +30,19 @@ async function main() {
   // Update status
   setInterval(async () => {
 	try {
-        let status = await getGraStatus(localPage, user);;
+        let status = await getGraStatus(localPage, user);
         if (!status) {
 		  console.log("Status: Diconnected!");
 		  await localBrowser.close();
 		  await startExtension(user);
         } else {
+		  await localPage.goto('chrome://extensions/');
 		  console.log("Status: Connected!");
 		}
       } catch (error) {
         console.log("🚀 ~ setInterval ~ error:", error);
      }
-  }, 120000);
+  }, 300000);
 }
 
 main();

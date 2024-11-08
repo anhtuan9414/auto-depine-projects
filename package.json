@@ -6,7 +6,7 @@
     "register": "node --env-file=.env register.js",
     "blockmesh": "node blockmesh.js",
     "gradient": "node gradient.js",
-    "dev-gradient": "node --env-file=.env gradient.js",
+    "dev-gradient": "node --max-old-space-size=200 --env-file=.env gradient.js",
     "dev-blockmesh": "node --env-file=.env blockmesh.js"
   },
   "author": "",
