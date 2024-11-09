@@ -102,6 +102,47 @@ async function loginGradient({user, pass}) {
 }
 
 
+async function reloginGradient({user, pass}, page) {
+  await page.goto('https://app.gradient.network', {
+    timeout: 60000,
+    waitUntil: "networkidle2",
+  });
+  await page.waitForSelector(GRA_USER_INPUT);
+  await page.type(GRA_USER_INPUT, user);
+  await page.type(GRA_PASS_INPUT, pass);
+  await page.waitForSelector(GRA_PASS_INPUT);
+  // press enter
+  await page.keyboard.press("Enter");
+  await new Promise(_func=> setTimeout(_func, 5000));
+  //await page.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+  let exists = false;
+  try {
+	 await page.waitForSelector(GRA_PASS_INPUT, {
+		 timeout: 2000
+	 });
+	 exists = true;
+  } catch (e) {
+  }
+  if (exists) {
+	  throw new Error('Login failed');
+  } else {
+	 console.log('Logged in successfully!');
+  }
+  await page.goto(GRADIENT_EXTENSION_URL, {
+    timeout: 60000,
+    waitUntil: "networkidle2",
+  });
+  await new Promise(_func=> setTimeout(_func, 5000));
+	const button = await page.$('button');
+	if (button) {
+		await button.click();
+	}
+  await new Promise(_func=> setTimeout(_func, 10000));
+  await page.reload();
+  console.log('Extension is activated!');
+  return page;
+}
+
 async function loginDawn({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToDawn);
   const page2 = await browser.newPage();
@@ -208,9 +249,20 @@ const getBlockmeshStatus = async (page, user) => {
 
 const getGraStatus = async (page, user) => {
   try {
+	let value3 = 'N/A';
 	await page.goto(GRADIENT_EXTENSION_URL);
+	await new Promise(_func=> setTimeout(_func, 2000));
     await page.waitForSelector(".avatar-container", {timeout: 5000});
 	try {
+		let element3 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div)');
+		value3 = await page.evaluate(el => el.textContent, element3);
+		console.log("Status:", value3);
+		if(value3 && (value3.toLowerCase() == 'diconnected' || value3.toLowerCase() == 'unsupported')){
+			return {
+				status: false,
+				text: value3
+			};
+		}
 		let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
 		let element2 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1])');
 		let value = await page.evaluate(el => el.textContent, element);
@@ -219,10 +271,15 @@ const getGraStatus = async (page, user) => {
 	} catch (error) {
 		console.log("🚀 ~ getGraStatus ~ error:", error);
 	}
-    return true;
+    return {
+				status: true,
+				text: value3
+			};
   } catch (error) {
-    console.log("🚀 ~ getGraStatus ~ error:", error);
-    return false;
+    return {
+				status: false,
+				text: 'Diconnected'
+			};
   }
 };
 
@@ -249,5 +306,6 @@ module.exports = {
   getBlockmeshStatus,
   saveScreenshot,
   getFrame,
-  getGraStatus
+  getGraStatus,
+  reloginGradient
 };

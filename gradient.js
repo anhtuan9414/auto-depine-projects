@@ -1,5 +1,5 @@
 const timers = require("node:timers/promises");
-const { getGraStatus, loginGradient } = require("./lib");
+const { getGraStatus, loginGradient, reloginGradient } = require("./lib");
 const axios = require("axios").default;
 const { HttpsProxyAgent } = require("https-proxy-agent");
 const {
@@ -25,24 +25,35 @@ async function main() {
 	await localPage1.goto('chrome://extensions/');
   };
   
-  await startExtension(user);
+  const restartExtension = async function (user) {
+	console.log("Relogin extension...");
+    await reloginGradient(user, localPage);
+	await localPage.goto('chrome://extensions/');
+  };
   
-  // Update status
-  setInterval(async () => {
+  let interval
+  const checkStatus = () => {
+	interval = setInterval(async () => {
 	try {
-        let status = await getGraStatus(localPage, user);
-        if (!status) {
-		  console.log("Status: Diconnected!");
-		  await localBrowser.close();
-		  await startExtension(user);
-        } else {
-		  await localPage.goto('chrome://extensions/');
-		  console.log("Status: Connected!");
+        let {status, text} = await getGraStatus(localPage, user);
+		if (text.toLowerCase() == 'unsupported') {
+			clearInterval(interval);
+		} else {
+			if (!status) {
+			  clearInterval(interval);
+			  await restartExtension(user);
+			  checkStatus();
+			} else {
+			  await localPage.goto('chrome://extensions/');
+			}
 		}
       } catch (error) {
         console.log("🚀 ~ setInterval ~ error:", error);
      }
-  },3600000);
+	},3600000);
+  }
+  await startExtension(user);
+  checkStatus();
 }
 
 main();
