@@ -51,10 +51,12 @@ async function main() {
         let {status, text} = await getGraStatus(localPage, user);
 		if (text.toLowerCase() == 'unsupported') {
 			clearInterval(interval);
+			localPage.close();
 		} else {
 			if (!status) {
 			  clearInterval(interval);
 			  if ((await restartExtension(user)).toLowerCase() == 'unsupported') {
+				  localPage.close();
 				  return;
 			  }
 			  checkStatus();
@@ -69,6 +71,7 @@ async function main() {
   }
   
   if ((await startExtension(user)).toLowerCase() == 'unsupported') {
+	  localPage.close();
 	  return;
   }
   
