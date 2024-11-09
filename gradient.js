@@ -22,19 +22,30 @@ async function main() {
     let { browser, page: localPage1 } = await loginGradient(user);
     localPage = localPage1;
     localBrowser = browser;
-	await getGraStatus(localPage, user);
-	await localPage1.goto('chrome://extensions/');
+	let {status, text} = await getGraStatus(localPage, user);
+	if (status){
+		await localPage1.goto('chrome://extensions/');
+		return text;
+	} else {
+		return text;
+	}
   };
   
   const restartExtension = async function (user) {
 	console.log("Relogin extension...");
     await reloginGradient(user, localPage);
-	await getGraStatus(localPage, user);
-	await localPage.goto('chrome://extensions/');
+	let {status, text} = await getGraStatus(localPage, user);
+	if (status){
+		await localPage1.goto('chrome://extensions/');
+		return text;
+	} else {
+		return text;
+	}
   };
   
   let interval
   const checkStatus = () => {
+	console.log('Start check status');
 	interval = setInterval(async () => {
 	try {
         let {status, text} = await getGraStatus(localPage, user);
@@ -43,7 +54,9 @@ async function main() {
 		} else {
 			if (!status) {
 			  clearInterval(interval);
-			  await restartExtension(user);
+			  if ((await restartExtension(user)).toLowerCase() == 'unsupported') {
+				  return;
+			  }
 			  checkStatus();
 			} else {
 			  await localPage.goto('chrome://extensions/');
@@ -54,7 +67,11 @@ async function main() {
      }
 	},3600000);
   }
-  await startExtension(user);
+  
+  if ((await startExtension(user)).toLowerCase() == 'unsupported') {
+	  return;
+  }
+  
   checkStatus();
 }
 

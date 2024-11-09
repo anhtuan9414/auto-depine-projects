@@ -251,7 +251,7 @@ const getGraStatus = async (page, user) => {
   try {
 	let value3 = 'N/A';
 	await page.goto(GRADIENT_EXTENSION_URL);
-	await new Promise(_func=> setTimeout(_func, 2000));
+	await new Promise(_func=> setTimeout(_func, 5000));
     await page.waitForSelector(".avatar-container", {timeout: 5000});
 	try {
 		let element3 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div)');
@@ -276,6 +276,7 @@ const getGraStatus = async (page, user) => {
 				text: value3
 			};
   } catch (error) {
+	console.log("🚀 ~ getGraStatus ~ error:", error);
     return {
 				status: false,
 				text: 'Diconnected'
