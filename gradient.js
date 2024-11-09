@@ -22,12 +22,14 @@ async function main() {
     let { browser, page: localPage1 } = await loginGradient(user);
     localPage = localPage1;
     localBrowser = browser;
+	await getGraStatus(localPage, user);
 	await localPage1.goto('chrome://extensions/');
   };
   
   const restartExtension = async function (user) {
 	console.log("Relogin extension...");
     await reloginGradient(user, localPage);
+	await getGraStatus(localPage, user);
 	await localPage.goto('chrome://extensions/');
   };
   
