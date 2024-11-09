@@ -53,8 +53,6 @@ async function loginGradient({user, pass}) {
         ) {
           return req.abort();
         }
-		console.log(req.resourceType());
-		console.log(req.url());
         return req.continue();
       });
   await page.goto(GRADIENT_EXTENSION_URL, {
