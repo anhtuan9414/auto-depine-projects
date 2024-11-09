@@ -21,6 +21,7 @@ const pathToBlockmesh = path.join(process.cwd(), "blockmesh");
 const pathToGradient = path.join(process.cwd(), "grandient");
 const pathToDawn = path.join(process.cwd(), "dawn");
 const rejectResourceTypes = ['image', 'font'];
+const rejectRequestPattern = [];
 
 async function loginBlockmesh({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToBlockmesh);
@@ -47,33 +48,54 @@ async function loginBlockmesh({user, pass}) {
 async function loginGradient({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToGradient);
   await page.setRequestInterception(true);
-   page.on('request', (req) => {
+	page.on('request', (req) => {
 		if (
-          rejectResourceTypes.includes(req.resourceType())
-        ) {
-          return req.abort();
-        }
-        return req.continue();
-      });
+		  !!rejectRequestPattern.find((pattern) => req.url().match(pattern)) || rejectResourceTypes.includes(req.resourceType())
+		) {
+		  return req.abort();
+		}
+		return req.continue();
+	  });
   await page.goto(GRADIENT_EXTENSION_URL, {
     timeout: 60000,
     waitUntil: "networkidle2",
   });
   const page2 = (await browser.pages())[1];
+  await page2.setRequestInterception(true);
+	page2.on('request', (req) => {
+	if (
+	  !![...rejectRequestPattern,'https://app.gradient.network/dashboard', 'https://app.gradient.network/favicon.ico'].find((pattern) => req.url().match(pattern)) || [...rejectResourceTypes, 'script', 'stylesheet'].includes(req.resourceType())
+	) {
+	  return req.abort();
+	}
+	return req.continue();
+	});
   await page2.waitForSelector(GRA_USER_INPUT);
   await page2.type(GRA_USER_INPUT, user);
   await page2.type(GRA_PASS_INPUT, pass);
   await page2.waitForSelector(GRA_PASS_INPUT);
   // press enter
   await page2.keyboard.press("Enter");
-  await new Promise(_func=> setTimeout(_func, 10000));
-  await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
-  console.log('Logged in successfully!')
+  await new Promise(_func=> setTimeout(_func, 5000));
+  //await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+  let exists = false;
+  try {
+	 await page2.waitForSelector(GRA_PASS_INPUT, {
+		 timeout: 2000
+	 });
+	 exists = true;
+  } catch (e) {
+  }
+  if (exists) {
+	  throw new Error('Login failed');
+  } else {
+	 console.log('Logged in successfully!');
+  }
   await page2.close();
   await page.reload();
   await new Promise(_func=> setTimeout(_func, 5000));
   await page.click('button');
-  await new Promise(_func=> setTimeout(_func, 20000));
+  await new Promise(_func=> setTimeout(_func, 10000));
   await page.reload();
   console.log('Extension is activated!');
   return {browser, page};
