@@ -60,7 +60,7 @@ async function loginGradient({user, pass}) {
     timeout: 60000,
     waitUntil: "networkidle2",
   });
-  const page2 = (await browser.pages())[1];
+  let page2 = (await browser.pages())[1];
   await page2.setRequestInterception(true);
 	page2.on('request', (req) => {
 	if (
@@ -98,11 +98,13 @@ async function loginGradient({user, pass}) {
   await new Promise(_func=> setTimeout(_func, 10000));
   await page.reload();
   console.log('Extension is activated!');
-  return {browser, page};
+  const page3 = await browser.newPage();
+  page.close();
+  return {browser, page: page3};
 }
 
 
-async function reloginGradient({user, pass}, page) {
+async function reloginGradient({user, pass}, page, browser) {
   await page.goto('https://app.gradient.network', {
     timeout: 60000,
     waitUntil: "networkidle2",
@@ -140,7 +142,9 @@ async function reloginGradient({user, pass}, page) {
   await new Promise(_func=> setTimeout(_func, 10000));
   await page.reload();
   console.log('Extension is activated!');
-  return page;
+  const page2 = await browser.newPage();
+  page.close();
+  return page2;
 }
 
 async function loginDawn({user, pass}) {
@@ -247,7 +251,7 @@ const getBlockmeshStatus = async (page, user) => {
 };
 
 
-const getGraStatus = async (page, user) => {
+const getGraStatus = async (browser, page, user) => {
   try {
 	let value3 = 'N/A';
 	await page.goto(GRADIENT_EXTENSION_URL);
@@ -260,7 +264,8 @@ const getGraStatus = async (page, user) => {
 		if(value3 && (value3.toLowerCase() == 'diconnected' || value3.toLowerCase() == 'unsupported')){
 			return {
 				status: false,
-				text: value3
+				text: value3,
+				page: page
 			};
 		}
 		let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
@@ -271,15 +276,19 @@ const getGraStatus = async (page, user) => {
 	} catch (error) {
 		console.log("🚀 ~ getGraStatus ~ error:", error);
 	}
+	const page2 = await browser.newPage();
+	page.close();
     return {
 				status: true,
-				text: value3
+				text: value3,
+				page: page2
 			};
   } catch (error) {
-	console.log("🚀 ~ getGraStatus ~ error:", error);
+	  console.log("Status: ", 'Diconnected');
     return {
 				status: false,
-				text: 'Diconnected'
+				text: 'Diconnected',
+				page: page
 			};
   }
 };
