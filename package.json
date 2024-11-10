@@ -6,14 +6,16 @@
     "register": "node --env-file=.env register.js",
     "blockmesh": "node blockmesh.js",
     "gradient": "node gradient.js",
+    "gradient-mini": "node gradient-mini.js",
     "dev-gradient": "node --env-file=.env gradient.js",
+	"dev-gradient-mini": "node --env-file=.env gradient-mini.js",
     "dev-blockmesh": "node --env-file=.env blockmesh.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.7.3",
+    "axios": "^1.7.7",
     "https-proxy-agent": "^7.0.4",
     "lodash": "^4.17.21",
     "pg": "^8.12.0",
