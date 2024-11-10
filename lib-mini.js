@@ -233,13 +233,13 @@ async function gradientWithoutLogin({
     }, tokenData);
 	page2.close();
 	await new Promise(_func => setTimeout(_func, 1000));
-	console.log('Logged in successfully!');
-    console.log('Extension is activated!');
 	await (await browser.pages())[0].goto('https://app.gradient.network/', {
         timeout: 10000
     });
 	(await browser.pages())[0].close();
 	const page3 = await browser.newPage();
+	console.log('Logged in successfully!');
+    console.log('Extension is activated!');
     return {
         browser,
         page: page3
@@ -379,6 +379,8 @@ async function loginAndOpenExtension(user, path) {
         // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
         // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
     });
+	
+	//await new Promise(_func => setTimeout(_func, 10000000));
 
     const page = (await browser.pages())[0]; // <-- bypasses Cloudflare
     await page.setUserAgent(
