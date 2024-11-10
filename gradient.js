@@ -55,9 +55,11 @@ async function main() {
 			}
 		}
       } catch (error) {
+		clearInterval(interval);
         console.log("🚀 ~ setInterval ~ error:", error);
+		throw error;
      }
-	},3600000);
+	},600000);
   }
   
   if ((await startExtension(user)).toLowerCase() == 'unsupported') {

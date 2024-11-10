@@ -284,7 +284,7 @@ const getGraStatus = async (browser, page, user) => {
 				page: page2
 			};
   } catch (error) {
-	  console.log("Status: ", 'Diconnected');
+	console.log("Status: ", 'Diconnected');
     return {
 				status: false,
 				text: 'Diconnected',
