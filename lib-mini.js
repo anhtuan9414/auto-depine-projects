@@ -193,7 +193,7 @@ async function gradientWithoutLogin({
     });
 	
     await page2.goto('https://app.gradient.network/', {
-        timeout: 7000
+        timeout: 10000
     });
 
     const tokenData = await signInWithPassword(user, pass, key);
@@ -236,7 +236,7 @@ async function gradientWithoutLogin({
 	console.log('Logged in successfully!');
     console.log('Extension is activated!');
 	await (await browser.pages())[0].goto('https://app.gradient.network/', {
-        timeout: 7000
+        timeout: 10000
     });
 	(await browser.pages())[0].close();
 	const page3 = await browser.newPage();
