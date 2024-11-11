@@ -367,10 +367,12 @@ const getGraStatus = async (browser, page, user) => {
 		value3 = await printStats(page);
 		if(value3 && (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported')){
 			if (value3.toLowerCase() == 'disconnected' && tokenData) {
-				await sendExtension(user, page);
-				await new Promise(_func=> setTimeout(_func, 3000));
+				const page2 = await browser.newPage();
+				await sendExtension(user, page2);
+				await new Promise(_func=> setTimeout(_func, 5000));
+				page2.close();
 				await page.reload();
-				await new Promise(_func=> setTimeout(_func, 7000));
+				await new Promise(_func=> setTimeout(_func, 5000));
 				value3 = await printStats(page);
 				if (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported') {
 					return {
