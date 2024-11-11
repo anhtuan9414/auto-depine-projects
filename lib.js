@@ -250,6 +250,18 @@ const getBlockmeshStatus = async (page, user) => {
   }
 };
 
+const printStats = async (page) => {
+	let element3 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div)');
+	let value3 = await page.evaluate(el => el.textContent, element3);
+	let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
+	let element2 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1])');
+	let value = await page.evaluate(el => el.textContent, element);
+	let value2 = await page.evaluate(el => el.textContent, element2);
+	console.log("Status:", value3);
+	console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value}`);
+	return value3;
+}
+
 
 const getGraStatus = async (browser, page, user) => {
   try {
@@ -258,21 +270,28 @@ const getGraStatus = async (browser, page, user) => {
 	await new Promise(_func=> setTimeout(_func, 5000));
     await page.waitForSelector(".avatar-container", {timeout: 5000});
 	try {
-		let element3 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div)');
-		value3 = await page.evaluate(el => el.textContent, element3);
-		console.log("Status:", value3);
+		value3 = await printStats(page);
 		if(value3 && (value3.toLowerCase() == 'diconnected' || value3.toLowerCase() == 'unsupported')){
-			return {
-				status: false,
-				text: value3,
-				page: page
-			};
+			if (value3.toLowerCase() == 'diconnected') {
+				console.log("Reload Extension!");
+				await page.reload();
+				await new Promise(_func=> setTimeout(_func, 5000));
+				value3 = await printStats(page);
+				if (value3.toLowerCase() == 'diconnected') {
+					return {
+							status: false,
+							text: value3,
+							page: page
+					};
+				}
+			} else {
+				return {
+					status: false,
+					text: value3,
+					page: page
+				};
+			}
 		}
-		let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
-		let element2 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1])');
-		let value = await page.evaluate(el => el.textContent, element);
-		let value2 = await page.evaluate(el => el.textContent, element2);
-		console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value}`);
 	} catch (error) {
 		console.log("🚀 ~ getGraStatus ~ error:", error);
 	}
