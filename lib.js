@@ -400,6 +400,7 @@ const getGraStatus = async (browser, page, user) => {
 				page: page2
 			};
   } catch (error) {
+	console.log(error);
 	console.log("Status: ", 'Disconnected');
     return {
 				status: false,
