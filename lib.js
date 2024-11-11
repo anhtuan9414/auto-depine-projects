@@ -22,6 +22,7 @@ const pathToGradient = path.join(process.cwd(), "grandient");
 const pathToDawn = path.join(process.cwd(), "dawn");
 const rejectResourceTypes = ['image', 'font'];
 const rejectRequestPattern = [];
+let tokenData;
 
 async function loginBlockmesh({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToBlockmesh);
@@ -70,6 +71,21 @@ async function loginGradient({user, pass}) {
 	}
 	return req.continue();
 	});
+	
+	page2.on('response', async (response) => {
+    if (response.url().includes('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword')) {
+      try {
+        const data = await response.json();
+		tokenData = {
+				accessToken: data.idToken,
+				uid: data.localId,
+				refreshToken: data.refreshToken
+		};
+		console.log('Get token: ...', tokenData.accessToken.slice(-4));
+      } catch (error) {
+      }
+    }
+  });
   await page2.waitForSelector(GRA_USER_INPUT);
   await page2.type(GRA_USER_INPUT, user);
   await page2.type(GRA_PASS_INPUT, pass);
@@ -105,6 +121,29 @@ async function loginGradient({user, pass}) {
 
 
 async function reloginGradient({user, pass}, page, browser) {
+  await page.setRequestInterception(true);
+  page.on('request', (req) => {
+	if (
+	  !![...rejectRequestPattern,'https://app.gradient.network/dashboard', 'https://app.gradient.network/favicon.ico'].find((pattern) => req.url().match(pattern)) || ([...rejectResourceTypes, 'script', 'stylesheet'].includes(req.resourceType()) && ['https://app.gradient.network/dashboard'].find((pattern) => req.url().match(pattern)))
+	) {
+	  return req.abort();
+	}
+	return req.continue();
+  });
+ page.on('response', async (response) => {
+    if (response.url().includes('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword')) {
+      try {
+        const data = await response.json();
+		tokenData = {
+				accessToken: data.idToken,
+				uid: data.localId,
+				refreshToken: data.refreshToken
+		};
+		console.log('Get token: ...', tokenData.accessToken.slice(-4));
+      } catch (error) {
+      }
+    }
+  });
   await page.goto('https://app.gradient.network', {
     timeout: 60000,
     waitUntil: "networkidle2",
@@ -130,21 +169,32 @@ async function reloginGradient({user, pass}, page, browser) {
   } else {
 	 console.log('Logged in successfully!');
   }
-  await page.goto(GRADIENT_EXTENSION_URL, {
+  const page2 = await browser.newPage();
+  await page.close();
+    await page2.setRequestInterception(true);
+	page2.on('request', (req) => {
+		if (
+		  !!rejectRequestPattern.find((pattern) => req.url().match(pattern)) || rejectResourceTypes.includes(req.resourceType())
+		) {
+		  return req.abort();
+		}
+		return req.continue();
+	  });
+  await page2.goto(GRADIENT_EXTENSION_URL, {
     timeout: 60000,
     waitUntil: "networkidle2",
   });
   await new Promise(_func=> setTimeout(_func, 5000));
-	const button = await page.$('button');
+	const button = await page2.$('button');
 	if (button) {
 		await button.click();
 	}
   await new Promise(_func=> setTimeout(_func, 10000));
-  await page.reload();
+  await page2.reload();
   console.log('Extension is activated!');
-  const page2 = await browser.newPage();
-  page.close();
-  return page2;
+  const page3 = await browser.newPage();
+  page2.close();
+  return page3;
 }
 
 async function loginDawn({user, pass}) {
@@ -262,6 +312,50 @@ const printStats = async (page) => {
 	return value3;
 }
 
+const sendExtension = async ({
+    user,
+    pass
+}, page) => {
+	if (!tokenData){ 
+		throw "Token Data is empty";
+	}
+    await page.evaluate((data) => {
+        try {
+            const extensionId = "caacbgbklghmpodbdafajbgdnegacfmo";
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                if (data && data.accessToken) {
+                    console.log("sending ChromeEx...", data.accessToken.slice(-4));
+
+                    // Simulate sending a login message to the extension
+                    chrome.runtime.sendMessage(extensionId, {
+                        action: "login",
+                        data: {
+                            token: data.accessToken,
+                            uid: data.uid,
+                            refresh: data.refreshToken
+                        }
+                    }, response => {
+                        console.log(response);
+                    });
+                } else {
+                    // Simulate sending a logout message to the extension
+                    chrome.runtime.sendMessage(extensionId, {
+                        action: "logout"
+                    }, response => {
+                        console.log(response);
+                    });
+                }
+            } else {
+                console.log("non-chrome env");
+            }
+        } catch (error) {
+            console.log("send ChromeEx Token Message error", error);
+        }
+    }, tokenData);
+	console.log("Sending ChromeEx...", tokenData.accessToken.slice(-4));
+}
+
+
 
 const getGraStatus = async (browser, page, user) => {
   try {
@@ -272,10 +366,11 @@ const getGraStatus = async (browser, page, user) => {
 	try {
 		value3 = await printStats(page);
 		if(value3 && (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported')){
-			if (value3.toLowerCase() == 'disconnected') {
-				console.log("Reload Extension!");
+			if (value3.toLowerCase() == 'disconnected' && tokenData) {
+				await sendExtension(user, page);
+				await new Promise(_func=> setTimeout(_func, 3000));
 				await page.reload();
-				await new Promise(_func=> setTimeout(_func, 5000));
+				await new Promise(_func=> setTimeout(_func, 7000));
 				value3 = await printStats(page);
 				if (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported') {
 					return {
