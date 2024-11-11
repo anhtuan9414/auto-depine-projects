@@ -219,7 +219,7 @@ async function loginAndOpenExtension(user, path) {
   }
   
   let browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args,
     // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
     // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
@@ -267,17 +267,17 @@ const getGraStatus = async (browser, page, user) => {
   try {
 	let value3 = 'N/A';
 	await page.goto(GRADIENT_EXTENSION_URL);
-	await new Promise(_func=> setTimeout(_func, 5000));
-    await page.waitForSelector(".avatar-container", {timeout: 5000});
+	console.log('Go to extension page!')
+    await page.waitForSelector(".avatar-container", {timeout: 10000});
 	try {
 		value3 = await printStats(page);
-		if(value3 && (value3.toLowerCase() == 'diconnected' || value3.toLowerCase() == 'unsupported')){
-			if (value3.toLowerCase() == 'diconnected') {
+		if(value3 && (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported')){
+			if (value3.toLowerCase() == 'disconnected') {
 				console.log("Reload Extension!");
 				await page.reload();
 				await new Promise(_func=> setTimeout(_func, 5000));
 				value3 = await printStats(page);
-				if (value3.toLowerCase() == 'diconnected') {
+				if (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported') {
 					return {
 							status: false,
 							text: value3,
@@ -303,10 +303,10 @@ const getGraStatus = async (browser, page, user) => {
 				page: page2
 			};
   } catch (error) {
-	console.log("Status: ", 'Diconnected');
+	console.log("Status: ", 'Disconnected');
     return {
 				status: false,
-				text: 'Diconnected',
+				text: 'Disconnected',
 				page: page
 			};
   }
