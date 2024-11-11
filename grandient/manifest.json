@@ -8,7 +8,7 @@
    },
    "description": "Get a sentry node and join the future of ubiquitous compute.",
    "externally_connectable": {
-      "matches": [ "https://app.gradient.network/*" ]
+      "matches": ["<all_urls>"]
    },
    "icons": {
       "128": "icons/icon-128.png",

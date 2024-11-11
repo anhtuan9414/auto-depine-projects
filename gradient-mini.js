@@ -1,5 +1,5 @@
 const timers = require("node:timers/promises");
-const { getGraStatus, loginGradient, reloginGradient, gradientWithoutLogin, printStats } = require("./lib-mini");
+const { getGraStatus, loginGradient, reloginGradient, gradientWithoutLogin, printStats, sendExtension } = require("./lib-mini");
 const axios = require("axios").default;
 const { HttpsProxyAgent } = require("https-proxy-agent");
 const {
@@ -25,47 +25,24 @@ async function main() {
 	return true;
   };
   
-  const restartExtension = async function (user) {
-	console.log("Relogin extension...");
-    localPage = await reloginGradient(user, localPage, localBrowser);
-	let {status, text, page} = await getGraStatus(localBrowser, localPage, user);
-	localPage = page;
-	const text2 = await printStats(localPage);
-	localPage = await browser.newPage();
-	page.close();
-	return text2;
-  };
-  
   let interval
   const checkStatus = () => {
 	interval = setInterval(async () => {
 	try {
-        let {status, text, page} = await getGraStatus(localBrowser, localPage, user);
-		localPage = page;
-		if (text.toLowerCase() == 'unsupported') {
-			clearInterval(interval);
-			localPage.close();
-		} else {
-			if (!status) {
-			  clearInterval(interval);
-			  if ((await restartExtension(user)).toLowerCase() == 'unsupported') {
-				  localPage.close();
-				  return;
-			  }
-			  checkStatus();
-			}
-		}
+		await sendExtension(user, localPage);
       } catch (error) {
+		localPage.close();
+		localBrowser.close();
 		clearInterval(interval);
         console.log("🚀 ~ setInterval ~ error:", error);
 		throw error;
      }
-	},30000);
+	},1800000);
   }
   
-  await startExtension(user)
+  await startExtension(user);
   
-  //checkStatus();
+  checkStatus();
 }
 
 main();

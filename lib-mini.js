@@ -23,6 +23,7 @@ const pathToGradient = path.join(process.cwd(), "grandient");
 const pathToDawn = path.join(process.cwd(), "dawn");
 const rejectResourceTypes = ['image', 'font'];
 const rejectRequestPattern = [];
+let tokenData;
 
 async function loginBlockmesh({
     user,
@@ -156,49 +157,27 @@ const signInWithPassword =	async (user, pass, key) => {
 
 		try {
 			const response = await axios.post(url, data, { headers });
-			return {
+			tokenData = {
 				accessToken: response.data.idToken,
 				uid: response.data.localId,
 				refreshToken: response.data.refreshToken
-			}
+			};
+			return tokenData;
 		} catch (error) {
 			console.error("Error:", error.response ? error.response.data : error.message);
 			throw error;
 		}
 }
 
-
-async function gradientWithoutLogin({
+const sendExtension = async ({
     user,
     pass,
 	key
-}) {
-    const {
-        browser,
-        page
-    } = await loginAndOpenExtension({
-        user,
-        pass
-    }, pathToGradient);
-    page.close();
-    const page2 = await browser.newPage();
-	await page2.setRequestInterception(true);
-    page2.on('request', (req) => {
-        if (
-            !!rejectRequestPattern.find((pattern) => req.url().match(pattern)) || [...rejectResourceTypes, 'script', 'stylesheet', 'other'].includes(req.resourceType())
-        ) {
-            return req.abort();
-        }
-        return req.continue();
-    });
-	
-    await page2.goto('https://app.gradient.network/', {
-        timeout: 10000
-    });
-
-    const tokenData = await signInWithPassword(user, pass, key);
-
-    await page2.evaluate((data) => {
+}, page) => {
+	if (!tokenData){ 
+		throw "Token Data is empty";
+	}
+    await page.evaluate((data) => {
         try {
             const extensionId = "caacbgbklghmpodbdafajbgdnegacfmo";
             if (typeof chrome !== 'undefined' && chrome.runtime) {
@@ -231,11 +210,29 @@ async function gradientWithoutLogin({
             console.log("send ChromeEx Token Message error", error);
         }
     }, tokenData);
-	page2.close();
+	console.log("Sending ChromeEx...", tokenData.accessToken.slice(-4));
+}
+
+async function gradientWithoutLogin({
+    user,
+    pass,
+	key
+}) {
+    const {
+        browser,
+        page
+    } = await loginAndOpenExtension({
+        user,
+        pass
+    }, pathToGradient);
+    await signInWithPassword(user, pass, key);
+    await sendExtension({
+		user,
+		pass,
+		key
+	}, page);
+	page.close();
 	await new Promise(_func => setTimeout(_func, 1000));
-	await (await browser.pages())[0].goto('https://app.gradient.network/', {
-        timeout: 10000
-    });
 	(await browser.pages())[0].close();
 	const page3 = await browser.newPage();
 	console.log('Logged in successfully!');
@@ -374,7 +371,7 @@ async function loginAndOpenExtension(user, path) {
     }
 
     let browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args,
         // defaultViewport: {width: 800, height: 600, deviceScaleFactor: 2},
         // targetFilter: (target) => target.type() !== "other", // Anh huong den iframe
@@ -499,5 +496,6 @@ module.exports = {
     getGraStatus,
     reloginGradient,
     gradientWithoutLogin,
-	printStats
+	printStats,
+	sendExtension
 };
