@@ -23,6 +23,7 @@ const pathToDawn = path.join(process.cwd(), "dawn");
 const rejectResourceTypes = ['image', 'font'];
 const rejectRequestPattern = [];
 let tokenData;
+let nodeId;
 
 async function loginBlockmesh({user, pass}) {
   const {browser, page} = await loginAndOpenExtension({user, pass}, pathToBlockmesh);
@@ -54,6 +55,14 @@ async function loginGradient({user, pass}) {
 		  !!rejectRequestPattern.find((pattern) => req.url().match(pattern)) || rejectResourceTypes.includes(req.resourceType())
 		) {
 		  return req.abort();
+		}
+		if (req.url().includes('https://api.gradient.network/api/sentrynode/get') && req.method() === 'GET') {
+		  try {
+			const match = req.url().match(/\/([^\/]+)$/);
+			nodeId = match ? match[1] : 'N/A';
+			console.log('Get Node ID:', nodeId);
+		  } catch (error) {
+		  }
 		}
 		return req.continue();
 	  });
@@ -180,6 +189,14 @@ async function reloginGradient({user, pass}, page, browser) {
 		  !!rejectRequestPattern.find((pattern) => req.url().match(pattern)) || rejectResourceTypes.includes(req.resourceType())
 		) {
 		  return req.abort();
+		}
+		if (req.url().includes('https://api.gradient.network/api/sentrynode/get') && req.method() === 'GET') {
+		  try {
+			const match = req.url().match(/\/([^\/]+)$/);
+			nodeId = match ? match[1] : 'N/A';
+			console.log('Get Node ID:', nodeId);
+		  } catch (error) {
+		  }
 		}
 		return req.continue();
 	  });
@@ -312,7 +329,7 @@ const printStats = async (page) => {
 	let value = await page.evaluate(el => el.textContent, element);
 	let value2 = await page.evaluate(el => el.textContent, element2);
 	console.log("Status:", value3);
-	console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value}`);
+	console.log(`Today's Taps: ${value2} ; Today's Uptime: ${value} ; Node ID: ${nodeId}`);
 	return value3;
 }
 
