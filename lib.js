@@ -62,6 +62,7 @@ async function loginGradient({user, pass}) {
     waitUntil: "networkidle2",
   });
   let page2 = (await browser.pages())[1];
+  console.log('Go to', 'https://app.gradient.network');
   await page2.setRequestInterception(true);
 	page2.on('request', (req) => {
 	if (
@@ -108,6 +109,7 @@ async function loginGradient({user, pass}) {
 	 console.log('Logged in successfully!');
   }
   await page2.close();
+  console.log('Go to', 'extension page');
   await page.reload();
   await new Promise(_func=> setTimeout(_func, 5000));
   await page.click('button');
@@ -144,6 +146,7 @@ async function reloginGradient({user, pass}, page, browser) {
       }
     }
   });
+  console.log('Go to', 'https://app.gradient.network');
   await page.goto('https://app.gradient.network', {
     timeout: 60000,
     waitUntil: "networkidle2",
@@ -180,6 +183,7 @@ async function reloginGradient({user, pass}, page, browser) {
 		}
 		return req.continue();
 	  });
+	console.log('Go to', 'extension page');
   await page2.goto(GRADIENT_EXTENSION_URL, {
     timeout: 60000,
     waitUntil: "networkidle2",
@@ -302,7 +306,7 @@ const getBlockmeshStatus = async (page, user) => {
 
 const printStats = async (page) => {
 	let element3 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div)');
-	let value3 = await page.evaluate(el => el.textContent, element3);
+	let value3 = (await page.evaluate(el => el.textContent, element3)) || 'N/A'.trim();
 	let element = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1])');
 	let element2 = await page.$('::-p-xpath(//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1])');
 	let value = await page.evaluate(el => el.textContent, element);
@@ -365,12 +369,14 @@ const getGraStatus = async (browser, page, user) => {
   try {
 	let value3 = 'N/A';
 	await page.goto(GRADIENT_EXTENSION_URL);
-	console.log('Go to extension page!')
+	console.log('Go to extension page');
     await page.waitForSelector(".avatar-container", {timeout: 10000});
+	
 	try {
 		value3 = await printStats(page);
 		if(value3 && (value3.toLowerCase() == 'disconnected' || value3.toLowerCase() == 'unsupported')){
 			if (value3.toLowerCase() == 'disconnected' && tokenData) {
+				console.log('Trying send token...');
 				const page2 = await browser.newPage();
 				await sendExtension(user, page2);
 				await new Promise(_func=> setTimeout(_func, 5000));
@@ -404,11 +410,13 @@ const getGraStatus = async (browser, page, user) => {
 				page: page2
 			};
   } catch (error) {
-	console.log("Status: ", 'Disconnected');
+	console.log("Status:", 'Logout');
+	const page2 = await browser.newPage();
+	page.close();
     return {
 				status: false,
 				text: 'Disconnected',
-				page: page
+				page: page2
 			};
   }
 };

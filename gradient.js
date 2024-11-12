@@ -59,7 +59,7 @@ async function main() {
         console.log("🚀 ~ setInterval ~ error:", error);
 		throw error;
      }
-	},1800000);
+	},600000);
   }
   
   if ((await startExtension(user)).toLowerCase() == 'unsupported') {
