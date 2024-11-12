@@ -32,7 +32,6 @@ async function main() {
 		const send = async () => {
 		  try {
 			await sendExtension(user, localPage);
-			throw "Token Data is empty";
 			tryNum = 0;
 		  } catch (error) {
 			++tryNum;
