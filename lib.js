@@ -319,6 +319,7 @@ const sendExtension = async ({
 	if (!tokenData){ 
 		throw "Token Data is empty";
 	}
+	let err;
     await page.evaluate((data) => {
         try {
             const extensionId = "caacbgbklghmpodbdafajbgdnegacfmo";
@@ -349,13 +350,16 @@ const sendExtension = async ({
                 console.log("non-chrome env");
             }
         } catch (error) {
+			err = error;
             console.log("send ChromeEx Token Message error", error);
         }
     }, tokenData);
 	console.log("Sending ChromeEx...", tokenData.accessToken.slice(-4));
+	await new Promise(_func => setTimeout(_func, 2000));
+	if (err) {
+		throw err;
+	}
 }
-
-
 
 const getGraStatus = async (browser, page, user) => {
   try {

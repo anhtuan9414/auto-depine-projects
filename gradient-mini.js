@@ -26,17 +26,31 @@ async function main() {
   };
   
   let interval
+  let tryNum = 0;
   const checkStatus = () => {
 	interval = setInterval(async () => {
-	try {
-		await sendExtension(user, localPage);
-      } catch (error) {
-		localPage.close();
-		localBrowser.close();
-		clearInterval(interval);
-        console.log("🚀 ~ setInterval ~ error:", error);
-		throw error;
-     }
+		const send = async () => {
+		  try {
+			await sendExtension(user, localPage);
+			throw "Token Data is empty";
+			tryNum = 0;
+		  } catch (error) {
+			++tryNum;
+			clearInterval(interval);
+			console.log("Send extension error");
+			if (tryNum <= 5) {
+				console.log("Retrying send extension...");
+				await new Promise(_func => setTimeout(_func, 2000));
+				await send(user, localPage);
+			} else {
+				console.log("Close all browser");
+				localPage.close();
+				localBrowser.close();
+				throw error;
+			}
+		 }
+		}
+		await send();
 	},1800000);
   }
   
