@@ -42,29 +42,36 @@ async function main() {
         let {status, text, page} = await getGraStatus(localBrowser, localPage, user);
 		localPage = page;
 		if (text.toLowerCase() == 'unsupported') {
-			clearInterval(interval);
-			localPage.close();
+			console.log('Waiting for 5 minutes to restart...');
+			await new Promise(_func=> setTimeout(_func, 300000));
+			throw 'Device Unsupported';
 		} else {
 			if (!status) {
 			  clearInterval(interval);
 			  if ((await restartExtension(user)).toLowerCase() == 'unsupported') {
-				  localPage.close();
-				  return;
+				  console.log('Waiting for 5 minutes to restart...');
+				  await new Promise(_func=> setTimeout(_func, 300000));
+				  throw 'Device Unsupported';
 			  }
 			  checkStatus();
 			}
 		}
       } catch (error) {
 		clearInterval(interval);
-        console.log("🚀 ~ setInterval ~ error:", error);
+		localPage.close();
+		localBrowser.close();
+        console.log("🚀 ~ checkStatus ~ error:", error);
 		throw error;
      }
 	},600000);
   }
   
   if ((await startExtension(user)).toLowerCase() == 'unsupported') {
+	  console.log('Waiting for 5 minutes to restart...');
+	  await new Promise(_func=> setTimeout(_func, 300000));
 	  localPage.close();
-	  return;
+	  localBrowser.close();
+	  throw 'Device Unsupported';
   }
   
   checkStatus();
