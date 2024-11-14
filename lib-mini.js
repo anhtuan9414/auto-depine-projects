@@ -225,7 +225,7 @@ const sendExtension = async ({
             console.log("send ChromeEx Token Message error", error);
         }
     }, tokenData);
-	console.log("Sending ChromeEx...", tokenData.accessToken.slice(-4));
+	console.log("Sending ChromeEx...", tokenData.accessToken.slice(-4), new Date());
 	await new Promise(_func => setTimeout(_func, 2000));
 	if (err) {
 		throw err;
