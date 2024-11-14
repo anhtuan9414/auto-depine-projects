@@ -64,7 +64,7 @@ async function main() {
         console.log("🚀 ~ checkStatus ~ error:", error);
 		throw error;
      }
-	},14400000);
+	},900000);
   }
   
   if ((await startExtension(user)).toLowerCase() == 'unsupported') {

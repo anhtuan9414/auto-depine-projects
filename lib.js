@@ -427,7 +427,7 @@ const getGraStatus = async (browser, page, user) => {
 				page: page2
 			};
   } catch (error) {
-	console.log("Status:", 'Logout');
+	console.log("Error:", error);
 	const page2 = await browser.newPage();
 	page.close();
     return {
