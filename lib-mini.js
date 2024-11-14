@@ -132,20 +132,32 @@ async function loginGradient({
     };
 }
 
+function getRandomHeaderValue(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
 const signInWithPassword =	async (user, pass, key) => {
+		console.log('Get new token.')
 		const url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + key;
 
 		const headers = {
 			"authority": "identitytoolkit.googleapis.com",
 			"method": "POST",
-			"path": "/v1/accounts:signInWithPassword?key=AIzaSyCWz-svq_InWzV9WaE3ez4XqxCE0C34ddI",
+			"path": "/v1/accounts:signInWithPassword?key="+ key,
 			"scheme": "https",
 			"accept": "*/*",
-			"accept-encoding": "gzip, deflate, br, zstd",
-			"accept-language": "en-US,en;q=0.9,vi;q=0.8",
+			"priority": "u=1, i",
+			"accept-encoding": getRandomHeaderValue(["gzip, deflate, br", "gzip, deflate, br, zstd"]),
+			"accept-language": getRandomHeaderValue(["en-US,en;q=0.9,vi;q=0.8", "en-GB,en;q=0.9", "en;q=0.8"]),
 			"origin": "https://app.gradient.network",
-			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-			"Content-Type": "application/json"
+			"User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0',
+			"Content-Type": "application/json",
+			"sec-fetch-dest": "empty",
+			"sec-fetch-mode": "cors",
+			"sec-fetch-site": "cross-site",
+			"x-client-data": "CIy2yQEIo7bJAQipncoBCNCgygEI/9/KAQiUocsBCIWgzQEIjafNAQjTx84BCIjMzgEI9c/OAQ==",
+			"x-client-version": "Chrome/JsCore/10.13.0/FirebaseCore-web",
+			"x-firebase-gmpid": "1:236765003043:web:4300552603f2d14908a096"
 		};
 
 		const data = {
@@ -162,7 +174,8 @@ const signInWithPassword =	async (user, pass, key) => {
 				uid: response.data.localId,
 				refreshToken: response.data.refreshToken
 			};
-			return tokenData;
+			console.log('Sync new token:', tokenData.accessToken.slice(-4));
+			return tokenData;;
 		} catch (error) {
 			console.error("Error:", error.response ? error.response.data : error.message);
 			throw error;
@@ -238,10 +251,9 @@ async function gradientWithoutLogin({
 		key
 	}, page);
 	page.close();
-	await new Promise(_func => setTimeout(_func, 1000));
+	await new Promise(_func => setTimeout(_func, 5000));
 	(await browser.pages())[0].close();
 	const page3 = await browser.newPage();
-	console.log('Logged in successfully!');
     console.log('Extension is activated!');
     return {
         browser,
@@ -503,5 +515,6 @@ module.exports = {
     reloginGradient,
     gradientWithoutLogin,
 	printStats,
-	sendExtension
+	sendExtension,
+	signInWithPassword
 };

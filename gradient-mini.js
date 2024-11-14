@@ -1,5 +1,5 @@
 const timers = require("node:timers/promises");
-const { getGraStatus, loginGradient, reloginGradient, gradientWithoutLogin, printStats, sendExtension } = require("./lib-mini");
+const { getGraStatus, loginGradient, reloginGradient, gradientWithoutLogin, printStats, sendExtension, signInWithPassword } = require("./lib-mini");
 const axios = require("axios").default;
 const { HttpsProxyAgent } = require("https-proxy-agent");
 const {
@@ -50,12 +50,26 @@ async function main() {
 		 }
 		}
 		await send();
-	},1800000);
+	},3600000); // 1 hour
+  }
+  
+  let interval2
+  const getToken = () => {
+	interval2 = setInterval(async () => {
+		try {
+			await signInWithPassword(user.user, user.pass, user.key);
+			tryNum = 0;
+		  } catch (error) {
+			console.log('Get token error: ', error)
+		}
+	},86400000); // 24 hours
   }
   
   await startExtension(user);
-  
+
   checkStatus();
+  
+  getToken();
 }
 
 main();
