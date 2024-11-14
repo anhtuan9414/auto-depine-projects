@@ -107,7 +107,7 @@ async function loginGradient({user, pass}) {
   let exists = false;
   try {
 	 await page2.waitForSelector(GRA_PASS_INPUT, {
-		 timeout: 2000
+		 timeout: 60000
 	 });
 	 exists = true;
   } catch (e) {
@@ -171,7 +171,7 @@ async function reloginGradient({user, pass}, page, browser) {
   let exists = false;
   try {
 	 await page.waitForSelector(GRA_PASS_INPUT, {
-		 timeout: 2000
+		 timeout: 60000
 	 });
 	 exists = true;
   } catch (e) {
