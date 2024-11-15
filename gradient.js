@@ -56,7 +56,6 @@ async function main() {
                 if (text.toLowerCase() == "unsupported") {
                     clearInterval(interval);
                     localPage.close();
-                    localBrowser.close();
                     return;
                 } else {
                     if (!status) {
@@ -66,7 +65,6 @@ async function main() {
                             "unsupported"
                         ) {
                             localPage.close();
-                            localBrowser.close();
                             return;
                         }
                         checkStatus();
@@ -75,7 +73,6 @@ async function main() {
             } catch (error) {
                 clearInterval(interval);
                 localPage.close();
-                localBrowser.close();
                 console.log("🚀 ~ checkStatus ~ error:", error);
                 throw error;
             }
@@ -129,12 +126,10 @@ async function main() {
 		
 	if ((await startExtension(user)).toLowerCase() == "unsupported") {
 		localPage.close();
-		localBrowser.close();
-		return;
-    }
-
-    checkStatus();
-	send();
+    } else {
+		checkStatus();
+		send();
+	}
 }
 
 main();
