@@ -79,7 +79,7 @@ async function main() {
                 console.log("🚀 ~ checkStatus ~ error:", error);
                 throw error;
             }
-        }, 60000);
+        }, 1800000);
     };
 	
 	const getRandomInterval = (minMinutes, maxMinutes) => {
@@ -112,7 +112,7 @@ async function main() {
 				newPage.close();
 			}
 			// Schedule the next execution with a dynamic interval
-			const interval = getRandomInterval(0.2, 0.6); // between 30 mins to 60 mins
+			const interval = getRandomInterval(30, 50); // between 30 mins to 50 mins
 			console.log(
 				`Send extension execution in ${interval / 60000} minutes.`,
 			);
@@ -120,7 +120,7 @@ async function main() {
 		};
 		
 		// Set an initial delay for the first execution
-		const initialInterval = getRandomInterval(0.2, 0.6);
+		const initialInterval = getRandomInterval(30, 50);
 		console.log(
 			`Send extension execution in ${initialInterval / 60000} minutes.`,
 		);
