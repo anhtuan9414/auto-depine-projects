@@ -437,6 +437,18 @@ const sendExtension = async ({ user, pass }, page) => {
 const getGraStatus = async (browser, page, user) => {
     try {
         let value3 = "N/A";
+		await page.setRequestInterception(true);
+		page.on("request", (req) => {
+			if (
+				!!rejectRequestPattern.find((pattern) =>
+					req.url().match(pattern),
+				) ||
+				rejectResourceTypes.includes(req.resourceType())
+			) {
+				return req.abort();
+			}
+			return req.continue();
+		});
         await page.goto(GRADIENT_EXTENSION_URL);
         console.log("Go to extension page");
         await page.waitForSelector(".avatar-container", { timeout: 10000 });
@@ -522,4 +534,5 @@ module.exports = {
     getFrame,
     getGraStatus,
     reloginGradient,
+	sendExtension
 };

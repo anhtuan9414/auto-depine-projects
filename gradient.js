@@ -1,5 +1,5 @@
 const timers = require("node:timers/promises");
-const { getGraStatus, loginGradient, reloginGradient } = require("./lib");
+const { getGraStatus, loginGradient, reloginGradient, sendExtension } = require("./lib");
 const axios = require("axios").default;
 const { HttpsProxyAgent } = require("https-proxy-agent");
 const {
@@ -79,16 +79,62 @@ async function main() {
                 console.log("🚀 ~ checkStatus ~ error:", error);
                 throw error;
             }
-        }, 900000);
+        }, 60000);
     };
-
-    if ((await startExtension(user)).toLowerCase() == "unsupported") {
-        localPage.close();
-        localBrowser.close();
-        return;
+	
+	const getRandomInterval = (minMinutes, maxMinutes) => {
+		const min = minMinutes * 60 * 1000; // Convert to milliseconds
+		const max = maxMinutes * 60 * 1000;
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+	
+	
+	const send = async () => {
+		let tryNum = 0;
+		const executeWithDynamicInterval = async () => {
+			let newPage;
+			try {
+				newPage = await localBrowser.newPage();
+				await sendExtension(user, newPage);
+			} catch (error) {
+				++tryNum;
+				newPage.close();
+				console.log("Send extension error");
+				if (tryNum <= 5) {
+					console.log("Retrying send extension...");
+					await new Promise((res) => setTimeout(res, 2000)); // Retry after 2 seconds
+					await executeWithDynamicInterval();
+					return; // Exit if retry occurs
+				}
+			}
+			tryNum = 0;
+			if (newPage) {
+				newPage.close();
+			}
+			// Schedule the next execution with a dynamic interval
+			const interval = getRandomInterval(0.2, 0.6); // between 30 mins to 60 mins
+			console.log(
+				`Send extension execution in ${interval / 60000} minutes.`,
+			);
+			setTimeout(executeWithDynamicInterval, interval);
+		};
+		
+		// Set an initial delay for the first execution
+		const initialInterval = getRandomInterval(0.2, 0.6);
+		console.log(
+			`Send extension execution in ${initialInterval / 60000} minutes.`,
+		);
+		setTimeout(executeWithDynamicInterval, initialInterval);
+	};
+		
+	if ((await startExtension(user)).toLowerCase() == "unsupported") {
+		localPage.close();
+		localBrowser.close();
+		return;
     }
 
     checkStatus();
+	send();
 }
 
 main();
