@@ -55,7 +55,6 @@ async function main() {
                 localPage = page;
                 if (text.toLowerCase() == "unsupported") {
                     clearInterval(interval);
-                    localPage.close();
                     return;
                 } else {
                     if (!status) {
@@ -64,7 +63,6 @@ async function main() {
                             (await restartExtension(user)).toLowerCase() ==
                             "unsupported"
                         ) {
-                            localPage.close();
                             return;
                         }
                         checkStatus();
@@ -72,9 +70,7 @@ async function main() {
                 }
             } catch (error) {
                 clearInterval(interval);
-                localPage.close();
                 console.log("🚀 ~ checkStatus ~ error:", error);
-                throw error;
             }
         }, 1800000);
     };
@@ -124,12 +120,11 @@ async function main() {
 		setTimeout(executeWithDynamicInterval, initialInterval);
 	};
 		
-	if ((await startExtension(user)).toLowerCase() == "unsupported") {
-		localPage.close();
-    } else {
+	if ((await startExtension(user)).toLowerCase() != "unsupported") {
 		checkStatus();
-		send();
-	}
+    }
+	
+	send();
 }
 
 main();
