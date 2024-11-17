@@ -100,7 +100,7 @@ async function main() {
             console.log("Get token executed at:", new Date());
             await signInWithPassword(user.user, user.pass, user.key);
             await sendExtension(user, localPage);
-            const nextInterval = getRandomIntervalSeconds(86400, 172800); // from 24h to 48h
+            const nextInterval = getRandomIntervalSeconds(259200, 432000); // from 72h to 120h
             console.log(
                 `Next get token execution in: ${(nextInterval / 1000).toFixed(2)} seconds`,
             );
@@ -117,8 +117,8 @@ async function main() {
 
     let intervalId = setInterval(
         getToken,
-        getRandomIntervalSeconds(86400, 172800),
-    ); // from 24h to 48h
+        getRandomIntervalSeconds(259200, 432000),
+    ); // from 72h to 120h
 }
 
 main();

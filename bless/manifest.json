@@ -1,0 +1,27 @@
+{
+   "action": {
+      "default_popup": "index.html"
+   },
+   "background": {
+      "service_worker": "background.js",
+      "type": "module"
+   },
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+   },
+   "description": "Bless Browser Extension",
+   "differential_fingerprint": "1.2c432447a1d3a16defc0d747d2b4889292f3a8ed91dce2eb4f74292e1fe0bce5",
+   "externally_connectable": {
+      "matches": [ "http://localhost:3000/*", "https://run-dashboard.vercel.app/*", "https://bless.network/dashboard/*" ]
+   },
+   "icons": {
+      "128": "icon-128.png",
+      "48": "icon-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqUGI/tf33eY4wYYarZCbEoyuWZJNBIXYrurR9M/gG83+Mqq62qOeYT4XpA1YDBzqVf9JsfZpoIWiH6tdq/IXWgbJkTQkfrWd/T7JSPmDdMHizUrbp/uYYWI1wUcCeAyJsvFEHUVSznCWYXGoc9bK5QWUzRf504sLNdGOuZpiXMfraLOCk3K5XCBPdm4RWUL5pvqom9IMGMzxls3i/3EY8RkPpcwWabxdgZGWQOnOcIaAMwxNjwLcyTxBVQAsmB4BGEABpGoFyCcPisR/B/BF2HXonXz2brZnJUut5ayod9c1pY3t83BBRM3qoxZtejaD7GLeOmaPz8YVQeivjeNsAQIDAQAB",
+   "manifest_version": 3,
+   "name": "Bless",
+   "permissions": [ "storage", "background", "system.cpu", "system.memory" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.1.4"
+}
