@@ -71,6 +71,7 @@ async function main() {
             } catch (error) {
                 clearInterval(interval);
                 console.log("🚀 ~ checkStatus ~ error:", error);
+				throw error;
             }
         }, 1800000);
     };
