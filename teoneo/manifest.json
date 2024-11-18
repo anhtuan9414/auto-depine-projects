@@ -1,0 +1,19 @@
+{
+   "action": {
+      "default_popup": "index.html",
+      "default_title": "Teneo Community Node"
+   },
+   "background": {
+      "service_worker": "background.js"
+   },
+   "description": "This is a Chrome extension for the Teneo Community Node",
+   "icons": {
+      "48": "icons/icon48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwg7/dQbMWxpVci+y9VzmeeEsGkCdGotY/KpED8Is2/l51/LAEWv1FbYNMnUlUphPoZsgaqZlQz43lnTKx6PJNwZ27zLFbvtTA2ArQBzTEoRHm2jicKECf1a//Dp28dxh3HSO82afp/k4i+FDk2VUUUYnsAszeypGJ71jfnyLuiwVjA5i0hylBo/aWRwf2Y04BNTpme02TtwB2/GgufmHYAJl9mpJ7jCPeHFxI+sx6Xa+cvI1FUtRcHoTFdWbpOYDhJ7UdunJUp6CCu/oMZj/l2zjwpRjTQYJIzzMgxUsh1G7ZeJK3kWRfj2ImaslrjTytRd13+L0lVnX0K2Gs+N+JQIDAQAB",
+   "manifest_version": 3,
+   "name": "Teneo Community Node",
+   "permissions": [ "storage" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.0"
+}

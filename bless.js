@@ -19,14 +19,14 @@ const waitForElementExists = async (page, selector, timeout = 10000) => {
 
 const checkActiveElement = async (page) => {
     try {
-		if (await waitForElementExists(page, '::-p-xpath(//*[data-state="unchecked"])')){
+		if (await waitForElementExists(page, 'button[data-state="unchecked"]')){
 			console.log("Extension is unchecked!");
-			await page.click('::-p-xpath(//*[data-state="unchecked"])');
+			await page.click('button[data-state="unchecked"]');
 		}
-        await page.waitForSelector('::-p-xpath(//*[data-state="checked"])', { timeout: 10000 });
+        await page.waitForSelector('button[data-state="checked"]', { timeout: 10000 });
         console.log("Extension is checked!");
     } catch {
-        console.error("Failed to find 'Checked' element. Extension activation failed.");
+        console.error("Failed to find 'checked' element. Extension activation failed.");
     }
 };
 
@@ -85,7 +85,7 @@ const run = async () => {
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
         );
 
-        console.log(`Navigating to ${extensionUrl} website...`);
+        console.log(`Navigating to https://bless.network/dashboard website...`);
         await page.goto('https://bless.network/dashboard', { waitUntil: "load" });
 
         await addCookieToLocalStorage(page, cookie);
