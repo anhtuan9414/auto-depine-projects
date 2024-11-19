@@ -19,7 +19,7 @@ const GRA_USER_INPUT = `::-p-xpath(//input[@placeholder="Enter Email"])`;
 const GRA_PASS_INPUT = '::-p-xpath(//input[@type="password"])';
 
 const pathToBlockmesh = path.join(process.cwd(), "blockmesh");
-const pathToGradient = path.join(process.cwd(), "grandient");
+const pathToGradient = path.join(process.cwd(), "gradient_1.0.16");
 const pathToDawn = path.join(process.cwd(), "dawn");
 const rejectResourceTypes = ["image", "font"];
 const rejectRequestPattern = [];
