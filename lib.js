@@ -328,7 +328,7 @@ async function loginAndOpenExtension(user, path) {
     }
 
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         args,
     });
 
