@@ -9,9 +9,9 @@
     "bless": "node bless.js",
     "gradient-mini": "node gradient-mini.js",
     "dev-gradient": "node --env-file=.env gradient.js",
-	"dev-gradient-mini": "node --env-file=.env gradient-mini.js",
+    "dev-gradient-mini": "node --env-file=.env gradient-mini.js",
     "dev-blockmesh": "node --env-file=.env blockmesh.js",
-	"dev-bless": "node --env-file=.env bless.js"
+    "dev-bless": "node --env-file=.env bless.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +23,7 @@
     "pg": "^8.12.0",
     "puppeteer": "^23.0.2",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "simple-ssh": "^1.1.1"
   }
 }
