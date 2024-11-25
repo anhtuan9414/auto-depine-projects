@@ -161,13 +161,21 @@ async function loginGradient({ user, pass }) {
     return { browser, page: page3 };
 }
 
+const waitForElementExists = async (page, selector, timeout = 5000) => {
+    try {
+        await page.waitForSelector(selector, { timeout });
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 async function reloginGradient({ user, pass }, page, browser) {
     await page.setRequestInterception(true);
     page.on("request", (req) => {
         if (
             !![
                 ...rejectRequestPattern,
-                "https://app.gradient.network/dashboard",
                 "https://app.gradient.network/favicon.ico",
             ].find((pattern) => req.url().match(pattern)) ||
             ([...rejectResourceTypes, "script", "stylesheet"].includes(
@@ -465,7 +473,7 @@ const getGraStatus = async (browser, page, user) => {
                     const page2 = await browser.newPage();
                     await sendExtension(user, page2);
                     await new Promise((_func) => setTimeout(_func, 5000));
-                    page2.close();
+					await page2.close();
                     await page.reload();
                     await new Promise((_func) => setTimeout(_func, 5000));
                     value3 = await printStats(page);
@@ -473,17 +481,27 @@ const getGraStatus = async (browser, page, user) => {
                         value3.toLowerCase() == "disconnected" ||
                         value3.toLowerCase() == "unsupported"
                     ) {
+						console.log("Logout account");
+						await page.click('.avatar-container');
+						await new Promise((_func) => setTimeout(_func, 3000));
+						await page.click("::-p-xpath(//*[text()='Log out'])");
+						await new Promise((_func) => setTimeout(_func, 10000));
+						const page3 = (await browser.pages())[1];
+						console.log("Logout successfully");
+						await page.close();
                         return {
                             status: false,
                             text: value3,
-                            page: page,
+                            page: page3,
                         };
                     }
                 } else {
+					const page2 = await browser.newPage();
+					page.close();
                     return {
                         status: false,
                         text: value3,
-                        page: page,
+                        page: page2,
                     };
                 }
             }

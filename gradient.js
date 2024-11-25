@@ -73,7 +73,7 @@ async function main() {
                 console.log("🚀 ~ checkStatus ~ error:", error);
 				throw error;
             }
-        }, 1800000);
+        }, 600000);
     };
 	
 	const getRandomInterval = (minMinutes, maxMinutes) => {
