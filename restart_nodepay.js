@@ -117,6 +117,7 @@ const check = async (data) => {
 	
 	const email = data.split('|')[0];
     const type = data.split('|')[1];
+    const password = data.split('|')[2];
 	
 	try {
 		browser = await puppeteer.launch({
@@ -141,8 +142,6 @@ const check = async (data) => {
   try {
 	  await page.goto('https://app.nodepay.ai/login', {timeout: 5000});
   } catch {}
-	// Input credentials
-	const password = 'Anhtuan@123';       // Replace with your password
 
 	const sendLogin = async () => {
 		try {
@@ -199,6 +198,9 @@ const check = async (data) => {
         const trElements = table.querySelectorAll('tbody tr');
 		
         for (let i = 1; i < trElements.length; i++) {
+			if (i > 3) {
+				break;
+			}
 			const ip = trElements[i].querySelector('td:nth-child(3)').textContent.trim();
 			totalIp.push(ip);
             if (trElements[i].querySelector('td:nth-child(1)').textContent.trim() === 'Disconnected') {

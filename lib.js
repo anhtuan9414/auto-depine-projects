@@ -473,7 +473,7 @@ const getGraStatus = async (browser, page, user) => {
                     const page2 = await browser.newPage();
                     await sendExtension(user, page2);
                     await new Promise((_func) => setTimeout(_func, 5000));
-					await page2.close();
+					page2.close();
                     await page.reload();
                     await new Promise((_func) => setTimeout(_func, 5000));
                     value3 = await printStats(page);
@@ -488,7 +488,7 @@ const getGraStatus = async (browser, page, user) => {
 						await new Promise((_func) => setTimeout(_func, 10000));
 						const page3 = (await browser.pages())[1];
 						console.log("Logout successfully");
-						await page.close();
+						page.close();
                         return {
                             status: false,
                             text: value3,
