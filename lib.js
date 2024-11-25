@@ -487,8 +487,8 @@ const getGraStatus = async (browser, page, user) => {
 						await page.click("::-p-xpath(//*[text()='Log out'])");
 						await new Promise((_func) => setTimeout(_func, 10000));
 						const page3 = (await browser.pages())[1];
-						console.log("Logout successfully");
 						page.close();
+						console.log("Logout successfully");
                         return {
                             status: false,
                             text: value3,
