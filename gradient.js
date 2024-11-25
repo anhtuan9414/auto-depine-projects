@@ -125,7 +125,7 @@ async function main() {
 		checkStatus();
     }
 	
-	send();
+	//send();
 }
 
 main();
