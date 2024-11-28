@@ -3,7 +3,7 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 const SSH = require('simple-ssh');
 const fs = require('fs');
-const filePath = 'temp_' + new Date().getTime() + '.txt';
+const _ = require('lodash');
 // Read the file content
 const data = fs.readFileSync('nodepay_accounts.txt', 'utf-8');
 // Split content by newline to get lines
@@ -13,6 +13,8 @@ let ssh_user = 'root';
 let ssh_pass = 'anhTuan@123AA';
 
 const rejectResourceTypes = ["image", "font"];
+const totalIps = [];
+const netId = "0";
 
 function isValidIPv4(ip) {
 	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$/;
@@ -44,9 +46,8 @@ const actionRunScripts = async (ips, token, type) => {
           console.log(`Start run scripts [${ip}]`);
           try {
             ssh.exec(`
-				docker rm -f $(docker ps -aqf "ancestor=kellphy/nodepay:latest")
-				docker pull kellphy/nodepay:latest
-				docker run -d --memory=300mb --restart unless-stopped --name nodepay -e NP_COOKIE="${token}" kellphy/nodepay:latest
+				docker rm -f nodepay_${netId}
+				docker run -d --memory=300mb --restart unless-stopped --network my_network_${netId} --name nodepay_${netId} -e NP_COOKIE="${token}" kellphy/nodepay:latest
 			  `, {
               out: function (stdout) {
                 console.log(stdout);
@@ -107,13 +108,9 @@ const waitForElementExists = async (page, selector, timeout = 5000) => {
     }
 };
 
-const check = async (data) => {
+const check = async (data, iplist) => {
 	let browser;
 	let token;
-	let res = {
-		iplist: [],
-		totalIp: [],
-	};
 	
 	const email = data.split('|')[0];
     const type = data.split('|')[1];
@@ -186,32 +183,6 @@ const check = async (data) => {
             await page.reload();
     }
 	
-	res = await page.evaluate(() => {
-		const iplist = [];
-		const iplistConnected = [];
-		const totalIp = [];
-        const table = document.querySelector('#table-device-networks table');
-        if (!table) return {iplist: iplist, totalIp: totalIp};
-		// document.querySelector("#rc_select_0_list div:nth-child(4)").click()
-
-        const trElements = table.querySelectorAll('tbody tr');
-		
-        for (let i = 1; i < trElements.length; i++) {
-			if (i > 3) {
-				break;
-			}
-			const ip = trElements[i].querySelector('td:nth-child(3)').textContent.trim();
-			totalIp.push(ip);
-            if (trElements[i].querySelector('td:nth-child(1)').textContent.trim() === 'Disconnected') {
-                iplist.push(ip);
-            } else {
-				iplistConnected.push(ip);
-			}
-        }
-		console.log(iplist)
-        return {iplist: iplist, totalIp: totalIp, iplistConnected: iplistConnected};
-    });
-	
 	
 	token = await page.evaluate((key) => {
         return localStorage.getItem(key);
@@ -223,33 +194,29 @@ const check = async (data) => {
 	
 	await browser.close();
 	
-	const line = email + '|' + res.totalIp.length + '|' + res.iplistConnected.toString() + '|' + res.iplist.toString() + '\n';
-
-	try {
-	  fs.appendFileSync(filePath, line);
-	  console.log('Line successfully appended!');
-	} catch (err) {
-	  console.error('Error appending to file:', err);
-	}
+	console.log(email, iplist, token);
+	await actionRunScripts(iplist, token, type);
 	
-	if (res.iplist.length == 0) {
-		console.log(email, 'No IP Disconnected')
-		return;
-	}
 	
-	console.log(email, res.iplist, token);;
-	await actionRunScripts(res.iplist, token, type);
 }
 
 (async () => {
 	const listfailed = [];
+	const chunks = _.chunk(totalIps, 3);
+	let j = 0;
 	for (let i of accounts) {
+	  const ips = chunks[j];
+	  if (!ips || ips.length < 3){
+		  console.log('Failed: ', ips);
+		  continue;
+	  }
        try {
-		   await check(i);
+		   await check(i, ips);
 	   } catch (e) {
-		   listfailed.push(i);
+		   listfailed.push({acc: i, ips: ips});
 		   console.log(e);
 	   }
+	   ++j;
     }
 	console.log('List Failed: ', listfailed)
 })();

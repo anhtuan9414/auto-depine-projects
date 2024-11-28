@@ -4,7 +4,7 @@ const gmaillist = fs.readFileSync('gmail.txt', 'utf-8');
 // Split content by newline to get lines
 const accounts = gmaillist.split(/\r?\n/); // Handles both \n and \r\n
 
-const filePath = 'gamilValid_' + new Date().getTime() + '.txt';
+const filePath = 'temp_gamilValid_' + new Date().getTime() + '.txt';
 
 const validGmail = [];
 

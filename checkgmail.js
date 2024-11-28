@@ -7,8 +7,8 @@ const gmaillist = fs.readFileSync('gmail.txt', 'utf-8');
 // Split content by newline to get lines
 const accounts = gmaillist.split(/\r?\n/); // Handles both \n and \r\n
 
-const filePath = 'gmailValid_' + new Date().getTime() + '.txt';
-const filePath2 = 'gmailInvalid_' + new Date().getTime() + '.txt';
+const filePath = 'temp_gmailValid_' + new Date().getTime() + '.txt';
+const filePath2 = 'temp_gmailInvalid_' + new Date().getTime() + '.txt';
 
 const waitForElementExists = async (page, selector, timeout = 5000) => {
     try {

@@ -4,7 +4,6 @@ puppeteer.use(StealthPlugin());
 const SSH = require('simple-ssh');
 const fs = require('fs');
 const _ = require('lodash');
-const filePath = new Date().getTime() + '.txt';
 // Read the file content
 const data = fs.readFileSync('nodepay_accounts.txt', 'utf-8');
 // Split content by newline to get lines
@@ -121,6 +120,7 @@ const check = async (data, iplist) => {
 		browser = await puppeteer.launch({
     headless: false,
     targetFilter: target => !!target.url(),
+	args: ['--window-size=1024,768']
   });
  
   
@@ -165,13 +165,10 @@ const check = async (data, iplist) => {
 			console.log('Trying login...');
             await page.reload();
     }
-
-	// Perform any post-login actions here
-	// Example: Navigate to the dashboard
-	await page.goto('https://app.nodepay.ai/dashboard', { waitUntil: 'networkidle0' });
 	
 	const waitTable = async () => {
 		try {
+			await page.goto('https://app.nodepay.ai/dashboard', { waitUntil: 'networkidle0' });
 			await new Promise((_func) => setTimeout(_func, 5000));
 			await page.waitForSelector('#table-device-networks table', { timeout: 10000 });
 			return true;
