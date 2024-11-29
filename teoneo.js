@@ -34,7 +34,7 @@ const run = async () => {
     const extensionId = 'emcclcoaglgcpoognfiggmhnhgabppkm';
     const extensionUrl = `chrome-extension://${extensionId}/index.html`;
 
-	const pathToBless = path.join(process.cwd(), "teoneo");
+	const pathToTeoneo = path.join(process.cwd(), "teoneo");
     const browserArgs = [
 		"--no-sandbox",
         "--disable-setuid-sandbox",
@@ -50,8 +50,8 @@ const run = async () => {
         "--disable-sync",
         "--disable-extensions",
         "--disable-popup-blocking",
-        `--disable-extensions-except=${pathToBless}`,
-        `--load-extension=${pathToBless}`,
+        `--disable-extensions-except=${pathToTeoneo}`,
+        `--load-extension=${pathToTeoneo}`,
         '--window-size=1024,768',
     ];
 
@@ -97,10 +97,16 @@ const run = async () => {
 		
 		await clickConnectElement(page);
 		
+		//const page2 = await browser.newPage();
+		//page.close();
+		//page = page2;
+		
 		console.log('Monitoring connection status...');
         setInterval(async () => {
             try {
-                await page.reload({ waitUntil: 'networkidle2' });
+                //console.log(`Navigating to ${extensionUrl} ...`);
+				//await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.reload({waitUntil: "networkidle2"});
                 if (await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])")) {
 					const rs = await page.evaluate(() => {
 						const elements = document.querySelectorAll('#root > div > div > div.flex.flex-col.gap-2.border.border-gray-500.p-2 div.items-center');
@@ -117,15 +123,19 @@ const run = async () => {
                     Object.keys(rs).forEach(key => {
 						console.log(key + ':', rs[key]);
 					})
-                } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Disconnected'])")) {
+                } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Not connected'])")) {
                     console.error("Status: Disconnected!");
 					await clickConnectElement(page);
                 } else {
                     console.error("Status: Unknown!");
                 }
+			
             } catch (err) {
                 console.error('Error refreshing page:', err);
             }
+			//const page2 = await browser.newPage();
+			//page.close();
+			//page = page2;
         }, 300000);
 		
     } catch (err) {
