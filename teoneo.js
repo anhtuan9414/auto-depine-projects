@@ -58,7 +58,7 @@ const run = async () => {
     let browser, page;
 
     try {
-        browser = await puppeteer.launch({ headless: false, args: browserArgs });
+        browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = await browser.newPage();
         await page.setUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
