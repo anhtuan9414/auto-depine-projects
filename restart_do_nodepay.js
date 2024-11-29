@@ -3,7 +3,6 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 const SSH = require('simple-ssh');
 const fs = require('fs');
-const _ = require('lodash');
 // Read the file content
 const data = fs.readFileSync('nodepay_accounts.txt', 'utf-8');
 // Split content by newline to get lines
@@ -12,10 +11,10 @@ const accounts = data.split(/\r?\n/); // Handles both \n and \r\n
 let ssh_user = 'root';
 let ssh_pass = 'anhTuan@123AA';
 
-const rejectResourceTypes = ["image", "font"];
-const totalIps = ['143.244.139.11', '165.232.181.167', '143.244.138.221', '165.232.185.247', '165.232.176.107', '165.232.189.215'];
-const netId = "0";
 let secUntilRestart = 60;
+let netId = '0';
+
+const rejectResourceTypes = ["image", "font"];
 
 function isValidIPv4(ip) {
 	const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$/;
@@ -29,7 +28,7 @@ function formatDateToDDMMYYYY(date) {
     return `${day}-${month}-${year}`; // Format as dd-mm-yyyy
 }
 
-const filePath = 'temp_runNodepay_'  + formatDateToDDMMYYYY(new Date()) + '_' + new Date().getTime() + '.txt';
+const filePath = 'temp_restartNodepay_' + formatDateToDDMMYYYY(new Date()) + '_' + new Date().getTime() + '.txt';
 
 const actionRunScripts = async (ips, token, type) => {
   const ipErrors = [];
@@ -107,7 +106,6 @@ const actionRunScripts = async (ips, token, type) => {
   if (ipErrors.length > 0) {
     console.log('IP Error: ', ipErrors);
   }
-  
   return ipErrors;
 };
 
@@ -120,20 +118,24 @@ const waitForElementExists = async (page, selector, timeout = 5000) => {
     }
 };
 
-const check = async (data, iplist) => {
+const check = async (data) => {
 	let browser;
 	let token;
+	let res = {
+		iplist: [],
+		totalIp: [],
+	};
 	
 	try {
 		const email = data.split('|')[0];
-		const type = data.split('|')[1];
-		const password = data.split('|')[2];
+		const type = '0';
+		const password = 'Anhtuan@123';
 		
 		try {
 			browser = await puppeteer.launch({
-		headless: false,
-		targetFilter: target => !!target.url(),
-		args: ['--window-size=1024,768']
+			headless: false,
+			targetFilter: target => !!target.url(),
+			args: ['--window-size=1024,768']
 	  });
 	 
 	  
@@ -196,6 +198,32 @@ const check = async (data, iplist) => {
 				await page.reload();
 		}
 		
+		res = await page.evaluate(() => {
+			const iplist = [];
+			const iplistConnected = [];
+			const totalIp = [];
+			const table = document.querySelector('#table-device-networks table');
+			if (!table) return {iplist: iplist, totalIp: totalIp};
+			// document.querySelector("#rc_select_0_list div:nth-child(4)").click()
+
+			const trElements = table.querySelectorAll('tbody tr');
+			
+			for (let i = 1; i < trElements.length; i++) {
+				if (i > 3) {
+					break;
+				}
+				const ip = trElements[i].querySelector('td:nth-child(3)').textContent.trim();
+				totalIp.push(ip);
+				if (trElements[i].querySelector('td:nth-child(1)').textContent.trim() === 'Disconnected') {
+					iplist.push(ip);
+				} else {
+					iplistConnected.push(ip);
+				}
+			}
+			console.log(iplist)
+			return {iplist: iplist, totalIp: totalIp, iplistConnected: iplistConnected};
+		});
+		
 		
 		token = await page.evaluate((key) => {
 			return localStorage.getItem(key);
@@ -205,7 +233,10 @@ const check = async (data, iplist) => {
 			throw e;
 		}
 		
-		const line = email + '|' + token + '\n';
+		await browser.close();
+		
+		const line = email + '|' + token + '|' + res.totalIp.length + '|' + res.iplistConnected.toString() + '|' + res.iplist.toString() + '\n';
+
 		try {
 		  fs.appendFileSync(filePath, line);
 		  console.log('Line successfully appended!');
@@ -213,46 +244,40 @@ const check = async (data, iplist) => {
 		  console.error('Error appending to file:', err);
 		}
 		
-		await browser.close();
+		if (res.iplist.length == 0) {
+			console.log(email, 'No IP Disconnected')
+			return [];
+		}
 		
-		console.log(email, iplist, token);
-		const ipErrors = await actionRunScripts(iplist, token, type);
-		
+		console.log(email, res.iplist, token);
+		const ipErrors = await actionRunScripts(res.iplist, token, type);
 		return ipErrors;
-	} catch (err)  {
+	} catch (err) {
 		console.error(`Error: ${err.message}`);
         if (browser) await browser.close();
         console.log(`Restarting in ${secUntilRestart} seconds...`);
 		await new Promise((_func) => setTimeout(_func, secUntilRestart * 1000));
-		return await check(data, iplist);
+		return await check(data);
 	}
 }
 
 (async () => {
 	const listfailed = [];
 	const listIpFailed = [];
-	const chunks = _.chunk(totalIps, 3);
-	let j = 0;
 	for (let i of accounts) {
-	  const ips = chunks[j];
-	  if (!ips || ips.length < 3){
-		  console.log('Failed: ', ips);
-		  continue;
-	  }
        try {
-		   const ipErrors = await check(i, ips);
-		    if (ipErrors.length > 0) {
+		   const ipErrors = await check(i);
+		   if (ipErrors.length > 0) {
 			   listIpFailed.push({
 				   acc: i,
 				   ipErrors: ipErrors.forEach(it => it.ip)
 			  });
 		   }
 	   } catch (e) {
-		   listfailed.push({acc: i, ips: ips});
+		   listfailed.push(i);
 		   console.log(e);
 	   }
-	   ++j;
     }
-	console.log('List Failed: ', listfailed)
-	console.log('List ip Failed: ', listIpFailed)
+	console.log('List Failed: ', listfailed);
+	console.log('List IP Failed: ', listIpFailed);
 })();

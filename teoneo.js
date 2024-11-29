@@ -60,6 +60,7 @@ const run = async () => {
     try {
         browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = await browser.newPage();
+		(await browser.pages())[0].close();
         await page.setUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
         );
@@ -97,16 +98,15 @@ const run = async () => {
 		
 		await clickConnectElement(page);
 		
-		//const page2 = await browser.newPage();
-		//page.close();
-		//page = page2;
+		const page2 = await browser.newPage();
+		page.close();
+		page = page2;
 		
 		console.log('Monitoring connection status...');
         setInterval(async () => {
             try {
-                //console.log(`Navigating to ${extensionUrl} ...`);
-				//await page.goto(extensionUrl , {waitUntil: "networkidle2"});
-				await page.reload({waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				//await page.reload({waitUntil: "networkidle2"});
                 if (await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])")) {
 					const rs = await page.evaluate(() => {
 						const elements = document.querySelectorAll('#root > div > div > div.flex.flex-col.gap-2.border.border-gray-500.p-2 div.items-center');
@@ -133,9 +133,9 @@ const run = async () => {
             } catch (err) {
                 console.error('Error refreshing page:', err);
             }
-			//const page2 = await browser.newPage();
-			//page.close();
-			//page = page2;
+			const page2 = await browser.newPage();
+			page.close();
+			page = page2;
         }, 300000);
 		
     } catch (err) {
