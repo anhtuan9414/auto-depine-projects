@@ -67,36 +67,43 @@ const run = async () => {
 
         console.log(`Navigating to ${extensionUrl} ...`);
         await page.goto(extensionUrl , {waitUntil: "networkidle2"});
-		await page.waitForSelector("::-p-xpath(//*[text()='Continue'])", { timeout: 10000 });
-		console.log('Clicking the extension Continue button...');
-        await page.click("::-p-xpath(//*[text()='Continue'])");
 		
-		const sendLogin = async () => {
-			try {
-				await new Promise((_func) => setTimeout(_func, 3000));
-				// Wait for the login form to load
-				await page.waitForSelector('input[type="email"]', { timeout: 5000 });
-				await page.waitForSelector('input[type="password"]');
-				await page.type('input[type="email"]', process.env.TEONEO_USERNAME, { delay: 50 }); // Simulate typing
-				await page.type('input[type="password"]', process.env.TEONEO_PASSWORD, { delay: 50 });
-
-				// Click the login button
-				await page.click('button');
-				await page.waitForSelector("::-p-xpath(//*[text()='Connect Node'])");
-				console.log('Login successful!');
-				return true;
-			}catch {
-				console.log('Login failed!');
-				return false;
+		const conncetNode = async () => {
+			if (await waitForElementExists(page, "::-p-xpath(//*[text()='Continue'])")) {
+				await page.waitForSelector("::-p-xpath(//*[text()='Continue'])", { timeout: 10000 });
+				console.log('Clicking the extension Continue button...');
+				await page.click("::-p-xpath(//*[text()='Continue'])");
 			}
-		}
-	
-		while (!(await sendLogin())) {
-				console.log('Trying login...');
-				await page.reload();
+			
+			const sendLogin = async () => {
+				try {
+					await new Promise((_func) => setTimeout(_func, 3000));
+					// Wait for the login form to load
+					await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+					await page.waitForSelector('input[type="password"]');
+					await page.type('input[type="email"]', process.env.TEONEO_USERNAME, { delay: 50 }); // Simulate typing
+					await page.type('input[type="password"]', process.env.TEONEO_PASSWORD, { delay: 50 });
+
+					// Click the login button
+					await page.click('button');
+					await page.waitForSelector("::-p-xpath(//*[text()='Connect Node'])");
+					console.log('Login successful!');
+					return true;
+				}catch {
+					console.log('Login failed!');
+					return false;
+				}
+			}
+		
+			while (!(await sendLogin())) {
+					console.log('Trying login...');
+					await page.reload();
+			}
+			
+			await clickConnectElement(page);
 		}
 		
-		await clickConnectElement(page);
+		await conncetNode();
 		
 		const page2 = await browser.newPage();
 		page.close();
@@ -126,10 +133,11 @@ const run = async () => {
                 } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Not connected'])")) {
                     console.error("Status: Disconnected!");
 					await clickConnectElement(page);
+                } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Continue'])") || await waitForElementExists(page, 'input[type="email"]')) {
+					await conncetNode();
                 } else {
-                    console.error("Status: Unknown!");
-                }
-			
+					console.error("Status: Unknown!");
+				}
             } catch (err) {
                 console.error('Error refreshing page:', err);
             }
