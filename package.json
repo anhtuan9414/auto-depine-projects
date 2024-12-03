@@ -8,12 +8,14 @@
     "gradient": "node gradient.js",
     "bless": "node bless.js",
     "teoneo": "node teoneo.js",
+    "pipe": "node pipe.js",
     "gradient-mini": "node gradient-mini.js",
     "dev-gradient": "node --env-file=.env gradient.js",
     "dev-gradient-mini": "node --env-file=.env gradient-mini.js",
     "dev-blockmesh": "node --env-file=.env blockmesh.js",
     "dev-bless": "node --env-file=.env bless.js",
-    "dev-teoneo": "node --env-file=.env teoneo.js"
+    "dev-teoneo": "node --env-file=.env teoneo.js",
+    "dev-pipe": "node --env-file=.env pipe.js"
   },
   "author": "",
   "license": "ISC",
