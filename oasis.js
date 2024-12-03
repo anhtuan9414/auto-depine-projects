@@ -14,7 +14,7 @@ const waitForElementExists = async (page, selector, timeout = 10000) => {
 
 const generateUniqueName = (prefix = "name") => {
   const timestamp = Date.now(); // Current time in milliseconds
-  const randomPart = Math.random().toString(36).substring(2, 50); // Random alphanumeric string
+  const randomPart = Math.random().toString(36).substring(2, 8); // Random alphanumeric string
   return `${prefix}_${timestamp}_${randomPart}`;
 }
 
@@ -101,7 +101,7 @@ const run = async () => {
 				await newPage.waitForSelector('input[name="name"]', { timeout: 10000 });
 				let deviceName = generateUniqueName('Device');
 				if (process.env.IP) {
-					deviceName = deviceName + "_" + process.env.IP;
+					deviceName = process.env.IP;
 				}
 				console.log('Enter device name:', deviceName);
 				await newPage.type('input[name="name"]', deviceName, { delay: 50 });
