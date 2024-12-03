@@ -99,7 +99,10 @@ const run = async () => {
 				await new Promise((_func) => setTimeout(_func, 2000));
 				let newPage = (await browser.pages())[1];
 				await newPage.waitForSelector('input[name="name"]', { timeout: 10000 });
-				const deviceName = generateUniqueName('Device');
+				let deviceName = generateUniqueName('Device');
+				if (process.env.IP) {
+					deviceName = deviceName + "_" + process.env.IP;
+				}
 				console.log('Enter device name:', deviceName);
 				await newPage.type('input[name="name"]', deviceName, { delay: 50 });
 				await newPage.click('button[type="submit"]');
