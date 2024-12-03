@@ -1,0 +1,31 @@
+{
+   "action": {
+      "default_icon": "logo128.png",
+      "default_popup": "index.html",
+      "default_title": "Oasis.ai"
+   },
+   "background": {
+      "service_worker": "worker.js",
+      "type": "module"
+   },
+   "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+   },
+   "description": "Quickly install and begin providing compute through our easy-to-use browser extension.",
+   "differential_fingerprint": "1.f36f5eff41d4c09ac2a294e9871be100ac3726ef2850ceaed42adcb5907967ec",
+   "externally_connectable": {
+      "matches": [ "https://*.oasis.ai/*" ]
+   },
+   "icons": {
+      "128": "logo128.png",
+      "16": "logo16.png",
+      "48": "logo48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjxB8ryKlIbih5m3Dzuhj5YqqsXZQHvV8NO4CWGsNDt7T/WfbKgInX8Jvuhxi2s+qZAmkVgarDHpbKsQqVrqiggtLo02b7PsGLZNWNrDnnTga/E5ecXDN3HXcTD0G9zjHWy5Dqh14NE548InzYU2mRt3/baPsDy/ktGQ3CavDqVwMpseYyJmjFxFzKsQlIai5n5U84GzTZJFXrNGq+8YvXhysq1WdJPVM40tj6FxDxUOvoB17J/CDitjcfRh5T/Ax/S8ZjfD+xP0zOwAeBiLM64eijgmpAYIFXzVJbH4P5ySbif84ddCm+yfwOV80HlI5B+hdz0EmN76f5XWY2/pdCwIDAQAB",
+   "manifest_version": 3,
+   "minimum_chrome_version": "116",
+   "name": "Oasis.ai",
+   "permissions": [ "offscreen", "system.cpu", "system.memory" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.1.9"
+}
