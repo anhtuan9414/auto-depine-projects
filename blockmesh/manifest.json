@@ -15,6 +15,12 @@
       "service_worker": "js/background.js",
       "type": "module"
    },
+   "content_scripts": [ {
+      "exclude_matches": [ "https://x.com/notifications", "https://twitter.com/notifications", "https://x.com/messages/*", "https://twitter.com/messages/*", "https://x.com/i/grok", "https://twitter.com/i/grok", "https://x.com/i/premium", "https://twitter.com/i/premium", "https://x.com/jobs", "https://twitter.com/jobs", "https://x.com/compose/articles", "https://twitter.com/compose/articles", "https://x.com/settings/*", "https://twitter.com/settings/*" ],
+      "js": [ "js/content.js" ],
+      "matches": [ "https://*.x.com/*", "https://x.com/*", "https://*.twitter.com/*", "https://twitter.com/*" ],
+      "run_at": "document_end"
+   } ],
    "content_security_policy": {
       "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
    },
@@ -40,9 +46,9 @@
    "permissions": [ "alarms", "storage", "background" ],
    "short_name": "BlockMesh",
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "0.0.170",
+   "version": "0.0.417",
    "web_accessible_resources": [ {
       "matches": [ "\u003Call_urls>" ],
-      "resources": [ "js/wasm/blockmesh_ext.js", "js/wasm/blockmesh_ext.wasm" ]
+      "resources": [ "js/wasm/blockmesh_ext.js", "js/wasm/blockmesh_ext.wasm", "/wasm/blockmesh_ext.js", "/wasm/blockmesh_ext.wasm" ]
    } ]
 }
