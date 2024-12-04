@@ -44,6 +44,7 @@ const run = async () => {
     let browser, page;
 
     try {
+		let failed = 0;
         browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = (await browser.pages())[0];
         await page.setUserAgent(
@@ -70,8 +71,12 @@ const run = async () => {
 				await frame.waitForSelector("::-p-xpath(//*[text()='Dashboard'])", { timeout: 30000 });
 				console.log('Login successful!');
 				return true;
-			} catch (e){
+			} catch (err){
 				console.log('Login failed!', e);
+				if (failed >= 10) {
+					throw err;
+				}
+				++failed;
 				return false;
 			}
 		}
@@ -85,7 +90,7 @@ const run = async () => {
 		const page2 = await browser.newPage();
 		page.close();
 		page = page2;
-		
+		failed = 0;
 		console.log('Monitoring connection status...');
         setInterval(async () => {
             try {
@@ -110,6 +115,10 @@ const run = async () => {
 				 }
             } catch (err) {
                 console.error(new Date(), 'Error refreshing page:', err);
+				if (failed >= 10) {
+					throw err;
+				}
+				++failed;
             }
 			const page2 = await browser.newPage();
 			page.close();

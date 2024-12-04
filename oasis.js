@@ -115,7 +115,7 @@ const run = async () => {
 				return true;
 			} catch (err) {
 				console.log('Connect node failed!');
-				if (failed >= 5) {
+				if (failed >= 10) {
 					throw err;
 				}
 				++failed;
@@ -176,7 +176,7 @@ const run = async () => {
 				 failed = 0;
             } catch (err) {
                 console.error(new Date(), 'Error refreshing page:', err);
-				if (failed >= 5) {
+				if (failed >= 10) {
 					throw err;
 				}
 				++failed;
