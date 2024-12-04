@@ -139,14 +139,14 @@ const run = async () => {
 				await page.type('#puzzelAns', data);
 				await page.click('#loginButton');
 				if (await waitForElementExists(page, "::-p-xpath(//*[text()='Incorrect answer. Try again!'])")) {
-					console.log('Incorrect answer. Try again!');
+					console.log('Incorrect answer!');
 					throw 'error';
 				}
-				await page.waitForSelector("::-p-xpath(//*[text()='Connection Quality'])");
+				await page.waitForSelector("a[href='dashboard.html']");
 				console.log('Login successful!');
 				return true;
-			} catch {
-				console.log('Login failed!');
+			} catch (err){
+				console.log('Login failed!', err.message);
 				return false;
 			}
 		}
@@ -169,7 +169,7 @@ const run = async () => {
 				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
 				await new Promise((_func) => setTimeout(_func, 5000));
 				
-				 if (await waitForElementExists(page, "::-p-xpath(//*[text()='Connection Quality'])")) {
+				 if (await waitForElementExists(page, "a[href='dashboard.html']")) {
 					const status = await page.evaluate(() => {
 						return document.querySelector('#isnetworkconnected').textContent.trim();
 					});
