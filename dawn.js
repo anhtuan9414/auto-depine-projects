@@ -140,7 +140,7 @@ const run = async () => {
 				await page.click('#loginButton');
 				if (await waitForElementExists(page, "::-p-xpath(//*[text()='Incorrect answer. Try again!'])")) {
 					console.log('Incorrect answer!');
-					throw 'error';
+					throw new Error('Incorrect answer!');
 				}
 				await page.waitForSelector("a[href='dashboard.html']");
 				console.log('Login successful!');
