@@ -113,6 +113,7 @@ const run = async () => {
 				 } else {
 					 console.error(new Date(), "Status: Unknown!");
 				 }
+				 failed = 0;
             } catch (err) {
                 console.error(new Date(), 'Error refreshing page:', err);
 				if (failed >= 10) {

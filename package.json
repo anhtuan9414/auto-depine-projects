@@ -10,6 +10,7 @@
     "teoneo": "node teoneo.js",
     "pipe": "node pipe.js",
     "oasis": "node oasis.js",
+    "dawn": "node dawn.js",
     "gradient-mini": "node gradient-mini.js",
     "dev-gradient": "node --env-file=.env gradient.js",
     "dev-gradient-mini": "node --env-file=.env gradient-mini.js",
@@ -17,12 +18,14 @@
     "dev-bless": "node --env-file=.env bless.js",
     "dev-teoneo": "node --env-file=.env teoneo.js",
     "dev-pipe": "node --env-file=.env pipe.js",
-    "dev-oasis": "node --env-file=.env oasis.js"
+    "dev-oasis": "node --env-file=.env oasis.js",
+    "dev-dawn": "node --env-file=.env dawn.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@2captcha/captcha-solver": "^1.3.0",
     "axios": "^1.7.7",
     "https-proxy-agent": "^7.0.4",
     "lodash": "^4.17.21",

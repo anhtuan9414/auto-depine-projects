@@ -1,0 +1,23 @@
+{
+   "action": {
+      "default_popup": "splash.html",
+      "default_title": "DAWN Validator Chrome Extension"
+   },
+   "author": "Andrena",
+   "background": {
+      "service_worker": "background.js"
+   },
+   "description": "DAWN Validator Chrome Extension",
+   "icons": {
+      "128": "dawn-extension-logo-128.png",
+      "16": "dawn-extension-logo-16.png",
+      "32": "dawn-extension-logo-32.png",
+      "48": "dawn-extension-logo-48.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAucDy0DWYS9W6FTmfpUjOlFBRYw052INH/Lx2+kq8ozCJG9uT3tIg3t+9vpDJG/e7oupHJ2uODf9D03oTE6kKwn6dSztPoe8AmORGkHnCK2pfb0n2NK111L6L2aefgsEVbYl7eLuDWrc6RN7km7FOs848vyimNhW0lBOphZZOfw6OC5iZUhGkDigYgfwFtUzbPD/xMUmRLXQrwwPJCmtucZApjbw+KbUqS0WSltawZB/5mYdM3jAyhKh9v9rFwrsO6BIyDVk0AAY3dw9EFu1wYLdP7eLE6Nsb2VCoSLfpuhZFxpbGVM2GANf4RzXMYfbdwA6byNZEj69B1/0oxvWUPQIDAQAB",
+   "manifest_version": 3,
+   "name": "DAWN Validator Chrome Extension",
+   "permissions": [ "storage", "alarms" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.1.1"
+}

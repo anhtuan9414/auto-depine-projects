@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <script src="js/dropdown.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link href="css/fonts-style.css" rel="stylesheet" />
+    <link href="css/Mefta.woff" rel="stylesheet" />
+  </head>
+  <body class="bgcolor">
+    <div class="box-main">
+      <div class="d-flex justify-content-between mx-2 p-2 pt-2">
+        <img
+          src="image/dawn-extension-logo.png"
+          alt=""
+          class="logo-style mt-2"
+        />
+        <div class="dropdown justify-content-end">
+          <div class="menu-circle">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              id="idclick"
+              class="menu-css"
+            >
+              <path
+                d="M2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44772 22 6C22 6.55228 21.5523 7 21 7H3C2.44772 7 2 6.55228 2 6Z"
+                fill="#ea651e"
+              />
+              <path
+                d="M2 12.0322C2 11.4799 2.44772 11.0322 3 11.0322H21C21.5523 11.0322 22 11.4799 22 12.0322C22 12.5845 21.5523 13.0322 21 13.0322H3C2.44772 13.0322 2 12.5845 2 12.0322Z"
+                fill="#ea651e"
+              />
+              <path
+                d="M3 17.0645C2.44772 17.0645 2 17.5122 2 18.0645C2 18.6167 2.44772 19.0645 3 19.0645H21C21.5523 19.0645 22 18.6167 22 18.0645C22 17.5122 21.5523 17.0645 21 17.0645H3Z"
+                fill="#ea651e"
+              />
+            </svg>
+            <div id="closeiconclick" class="close-style" style="display: none">
+              &times;
+            </div>
+          </div>
+          <ul id="list-items" class="drop-menu">
+            <li><a href="dashboard.html"> Home </a></li>
+            <li><a href="profile.html"> Profile </a></li>
+            <li><a href="pointsdashboard.html"> Dashboard </a></li>
+
+            <li><a href="referfriend.html"> Refer a friend </a></li>
+            <li><a href="logout.html"> Logout </a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mx-3">
+        <div>
+          <div class="pt-2 backbtn-style">
+            <a href="dashboard.html" class="text-black text-decoration-none">
+              <!-- <i class="bi bi-arrow-left"></i>&nbsp; Back -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-arrow-left"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+                /></svg>&nbsp; Back
+            </a>
+          </div>
+        </div>
+        <h6 class="pt-5 login-text">Earn additional rewards</h6>
+        <p class="referfriendpara">
+          Refer your friends with your unique code below to earn ongoing rewards
+        </p>
+        <div class="pt-2">
+          <!-- <div class="mt-3"> -->
+          <h6 class="linkcode-style">Your code</h6>
+          <div class="d-flex gap-1 inputstyle">
+            <input type="text" id="myReferralCode" class="inputbox" readonly />
+            <div class="copyiconsty">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                width="25"
+                fill="#ea651e"
+                height="25"
+                id="copyButton"
+              >
+                <path
+                  d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"
+                />
+              </svg>
+            </div>
+          </div>
+          <!-- <h6 class="mt-3 linkcode-style">Your referral link</h6>
+          <div class="d-flex gap-1 inputstyle" id="copyTextLink">
+            <textarea
+              id="myReferralCodeLink"
+              class="inputtextbox inputbox linkinputbox"
+              readonly
+            >
+myReferralCodeLink</textarea
+            >
+           
+            <div class="copyiconsty mt-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                width="25"
+                fill="#ea651e"
+                height="25"
+                id="copyButtonLink"
+              >
+                <path
+                  d="M384 336l-192 0c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l140.1 0L400 115.9 400 320c0 8.8-7.2 16-16 16zM192 384l192 0c35.3 0 64-28.7 64-64l0-204.1c0-12.7-5.1-24.9-14.1-33.9L366.1 14.1c-9-9-21.2-14.1-33.9-14.1L192 0c-35.3 0-64 28.7-64 64l0 256c0 35.3 28.7 64 64 64zM64 128c-35.3 0-64 28.7-64 64L0 448c0 35.3 28.7 64 64 64l192 0c35.3 0 64-28.7 64-64l0-32-48 0 0 32c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256c0-8.8 7.2-16 16-16l32 0 0-48-32 0z"
+                />
+              </svg>
+            </div>
+          </div> -->
+          <!-- </div> -->
+        </div>
+      </div>
+      <div class="mt-4">
+        <h6 class="d-flex justify-content-center login-text mt-5">
+          Follow us and earn rewards
+        </h6>
+        <div class="d-flex justify-content-evenly mt-2 p-2">
+          <div class="text-center">
+            <div class="twittericon mb-3" id="twitterShareBtn">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                width="32"
+                height="32"
+              >
+                <path
+                  d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
+                />
+              </svg>
+            </div>
+            <!-- <p class="socialText">X</p> -->
+            <p class="plustext" id="twitter_x_id_points">+5,000</p>
+            <p class="plustext" id="twitter_x_id_tick">
+              Claimed! <i class="fa fa-check"></i>
+            </p>
+          </div>
+          <div class="text-center">
+            <div class="discordicon mb-3" id="discordShareBtn">
+              <!-- <svg xmlns="http://www.w3.org/2000/svg"
+                width="37"
+                height="37" viewBox="0 0 640 512">
+                  <path
+                    d="M524.5 69.8a1.5 1.5 0 0 0 -.8-.7A485.1 485.1 0 0 0 404.1 32a1.8 1.8 0 0 0 -1.9 .9 337.5 337.5 0 0 0 -14.9 30.6 447.8 447.8 0 0 0 -134.4 0 309.5 309.5 0 0 0 -15.1-30.6 1.9 1.9 0 0 0 -1.9-.9A483.7 483.7 0 0 0 116.1 69.1a1.7 1.7 0 0 0 -.8 .7C39.1 183.7 18.2 294.7 28.4 404.4a2 2 0 0 0 .8 1.4A487.7 487.7 0 0 0 176 479.9a1.9 1.9 0 0 0 2.1-.7A348.2 348.2 0 0 0 208.1 430.4a1.9 1.9 0 0 0 -1-2.6 321.2 321.2 0 0 1 -45.9-21.9 1.9 1.9 0 0 1 -.2-3.1c3.1-2.3 6.2-4.7 9.1-7.1a1.8 1.8 0 0 1 1.9-.3c96.2 43.9 200.4 43.9 295.5 0a1.8 1.8 0 0 1 1.9 .2c2.9 2.4 6 4.9 9.1 7.2a1.9 1.9 0 0 1 -.2 3.1 301.4 301.4 0 0 1 -45.9 21.8 1.9 1.9 0 0 0 -1 2.6 391.1 391.1 0 0 0 30 48.8 1.9 1.9 0 0 0 2.1 .7A486 486 0 0 0 610.7 405.7a1.9 1.9 0 0 0 .8-1.4C623.7 277.6 590.9 167.5 524.5 69.8zM222.5 337.6c-29 0-52.8-26.6-52.8-59.2S193.1 219.1 222.5 219.1c29.7 0 53.3 26.8 52.8 59.2C275.3 311 251.9 337.6 222.5 337.6zm195.4 0c-29 0-52.8-26.6-52.8-59.2S388.4 219.1 417.9 219.1c29.7 0 53.3 26.8 52.8 59.2C470.7 311 447.5 337.6 417.9 337.6z"
+                  />
+                </svg> -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                fill="currentColor"
+                class="bi bi-discord"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019m-8.198 7.307c-.789 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612m5.316 0c-.788 0-1.438-.724-1.438-1.612s.637-1.613 1.438-1.613c.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612"
+                />
+              </svg>
+            </div>
+            <!-- <p class="socialText">Discord</p> -->
+            <p class="plustext" id="discordid_points">+5,000</p>
+            <p class="plustext" id="discordid_tick">
+              Claimed! <i class="fa fa-check"></i>
+            </p>
+          </div>
+          <div class="text-center">
+            <div class="telegramicon mb-3" id="telegramShareBtn">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                class="bi bi-telegram"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"
+                />
+              </svg>
+            </div>
+            <!-- <p class="socialText">Telegram</p> -->
+            <p class="plustext" id="telegramid_points">+5,000</p>
+            <p class="plustext" id="telegramid_tick">
+              Claimed! <i class="fa fa-check"></i>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center">
+
+        <div class="copied-main-div" id="copyboxId">Copy Successful</div>
+      </div>
+    </div>
+    <script src="referfriend.js"></script>
+    <script src="copycode.js"></script>
+    <div id="popup-box-twitter" class="modal">
+      <div class="content">
+        <h6>Twitter ID</h6>
+        <div class="inputstylepopup">
+          <input
+            class="inputbox"
+            type="text"
+            id="twitter_x_id"
+            placeholder="Enter Twitter ID (i.e. @xyz1230) "
+          />
+        </div>
+        <a href="#" class="closeicon">&times;</a>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="sendBtn">Next</button>
+        </div>
+      </div>
+    </div>
+    <div id="popup-box-discord" class="modal">
+      <div class="content">
+        <h6>Discord ID</h6>
+        <div class="inputstylepopup">
+          <input
+            class="inputbox"
+            type="text"
+            id="discordid"
+            placeholder="Enter Discord ID (i.e. xyz_1230) "
+          />
+        </div>
+        <a href="#" class="closeicon">&times;</a>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="sendBtn">Next</button>
+        </div>
+      </div>
+    </div>
+    <div id="popup-box-telegram" class="modal">
+      <div class="content">
+        <h6>Telegram ID</h6>
+        <div class="inputstylepopup">
+          <input
+            class="inputbox"
+            type="text"
+            id="telegramid"
+            placeholder="Enter Telegram ID (i.e. @xyz_abc) "
+          />
+        </div>
+        <a href="#" class="closeicon">&times;</a>
+        <div class="d-flex justify-content-center mt-3">
+          <button class="sendBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

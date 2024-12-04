@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link href="css/fonts-style.css" rel="stylesheet" />
+    <link href="css/Mefta.woff" rel="stylesheet" />
+  </head>
+  <body class="bgcolor">
+    <div class="box-main p-2">
+      <div class="d-flex justify-content-center mt-3">
+        <img
+          src="image/dawn-extension-logo.png"
+          alt=""
+          class="logo-style mt-1"
+        />
+        <!-- <div class="d-flex gap-4 mt-2">
+            <p>About us</p>
+            <p>FAQ</p>
+          </div> -->
+      </div>
+      <div class="row justify-content-center align-items-center mt-3">
+        <div class="text-center px-2">
+          <h5 class="text-center login-text mt-3">Login</h5>
+        </div>
+        <div class="p-3">
+          <form id="signinForm" autocomplete="on">
+            <div method="post" action="" role="form">
+              <div class="controls">
+                <div class="">
+                  <h6 class="linkcode-style">Email</h6>
+                  <div class="d-flex gap-1 inputstyle">
+                    <input
+                      type="text"
+                      id="email"
+                      name="email"
+                      class="inputbox"
+                      placeholder="ex: roger@example.io"
+                      required
+                      autocomplete="off"
+                    />
+                  </div>
+                  <h6 class="mt-4 linkcode-style">Password</h6>
+                  <div class="d-flex gap-2 mt-2 inputstyle">
+                    <input
+                      type="password"
+                      class="inputbox"
+                      id="password"
+                      name="password"
+                      placeholder="Input your password"
+                      required
+                      autocomplete="off"
+                    />
+                    <div id="togglePassword" class="toggle-button mt-1">
+                      <i class="fa fa-eye-slash"></i>
+                    </div>
+                  </div>
+                  <p class="mt-2 text-black text-end">
+                    <a
+                      href="forgotpassword.html"
+                      class="text-decoration-none linkText forgot-text"
+                      >Forgot Password?</a
+                    >
+                  </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                  <div class="loader" id="loader"></div>
+                </div>
+                <div id="captcha">
+                  <div class="d-flex justify-content-between gap-3">
+                    <img class="puzzleImageSty" id="puzzleImage" src="" />
+                    <button
+                      type="button"
+                      class="refresh-btn"
+                      id="captcha-Refresh"
+                    >
+                      <i class="fa fa-refresh" style="font-size: 15px"></i>
+                    </button>
+
+                    <span class="puzzelEqualSign"> &#61; </span>
+                    <div class="inputstyle puzzleInput">
+                      <input
+                        type="text"
+                        class="inputbox"
+                        id="puzzelAns"
+                        placeholder="?"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-3">
+                  <a href="dashboard.html">
+                    <button class="loginBtn" type="submit" id="loginButton">
+                      Login
+                    </button>
+                  </a>
+                </div>
+                <div class="error text-center mt-3" id="error"></div>
+                <div class="d-flex justify-content-center">
+                  <span class="text-center" id="clickToOpenPuzzelPopup"
+                    ><a href="#puzzel-popup-login" class="clickhereText"
+                      ><b> click here</b></a
+                    >&nbsp; <span class="error">to resend Email</span></span
+                  >
+                </div>
+                <div class="d-flex justify-content-center text-bottom mt-4">
+                  <p>Don't have an account?</p>
+                  <a
+                    href="signup.html"
+                    class="linkText changepassword-style mx-1"
+                    >Register</a
+                  >
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div id="puzzel-popup-login" class="modal">
+      <div class="content">
+        <div class="d-flex justify-content-center">
+          <div class="loader" id="loaderpopup"></div>
+        </div>
+        <div id="captchapopup">
+          <div class="d-flex justify-content-between gap-2">
+            <img class="puzzleImageStyPopup" id="puzzleImagePopup" src="" />
+            <button
+              type="button"
+              class="refresh-btn"
+              id="captcha-Refresh-popup"
+            >
+              <i class="fa fa-refresh" style="font-size: 15px"></i>
+            </button>
+            <span class="puzzelEqualSign"> &#61; </span>
+            <div class="inputstyle puzzleInput">
+              <input
+                type="text"
+                class="inputbox"
+                id="puzzelAnsPopup"
+                placeholder="?"
+              />
+            </div>
+          </div>
+        </div>
+        <a href="#" class="closeicon">&times;</a>
+        <div class="error text-center mt-3 verifyerror" id="verifyerror"></div>
+
+        <div class="d-flex justify-content-center mt-3">
+          <button class="sendBtn" id="clickToResendEmail">Verify</button>
+        </div>
+      </div>
+    </div>
+    <script src="signin.js"></script>
+    <script src="signinpasswordshow.js"></script>
+  </body>
+</html>
