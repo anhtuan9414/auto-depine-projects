@@ -40,6 +40,20 @@ const run = async () => {
 
 	const pathTo = path.join(process.cwd(), "dawn");
     const browserArgs = [
+		"--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--disable-gpu",
+        "--no-zygote",
+        "--disable-software-rasterizer",
+        "--disable-notifications",
+        "--disable-background-networking",
+        "--disable-features=site-per-process,AudioServiceOutOfProcess",
+        "--mute-audio",
+        "--disable-sync",
+        "--disable-extensions",
+        "--disable-popup-blocking",
         `--disable-extensions-except=${pathTo}`,
         `--load-extension=${pathTo}`,
         '--window-size=1024,768',
