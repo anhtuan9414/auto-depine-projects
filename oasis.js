@@ -50,6 +50,7 @@ const run = async () => {
     let browser, page;
 
     try {
+		let failed = 0;
         browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = await browser.newPage();
 		(await browser.pages())[0].close();
@@ -112,8 +113,12 @@ const run = async () => {
 				newPage.close();
 				await page.reload();
 				return true;
-			} catch {
+			} catch (err) {
 				console.log('Connect node failed!');
+				if (failed >= 5) {
+					throw err;
+				}
+				++failed;
 				return false;
 			}
 		}
@@ -129,6 +134,7 @@ const run = async () => {
 		page = page2;
 		
 		console.log('Monitoring connection status...');
+		failed = 0;
         setInterval(async () => {
             try {
 				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
@@ -167,8 +173,13 @@ const run = async () => {
 				 } else {
 					 console.error(new Date(), "Status: Unknown!");
 				 }
+				 failed = 0;
             } catch (err) {
                 console.error(new Date(), 'Error refreshing page:', err);
+				if (failed >= 5) {
+					throw err;
+				}
+				++failed;
             }
 			const page2 = await browser.newPage();
 			page.close();
