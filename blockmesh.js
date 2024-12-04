@@ -114,7 +114,7 @@ const run = async () => {
 			const page2 = await browser.newPage();
 			page.close();
 			page = page2;
-        }, 300000);
+        }, 600000);
     } catch (err) {
         console.error(`Error: ${err.message}`);
         if (browser) await browser.close();
