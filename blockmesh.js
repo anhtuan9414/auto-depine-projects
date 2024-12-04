@@ -79,6 +79,7 @@ const run = async () => {
 		while (!(await sendLogin())) {
 				console.log('Trying login...');
 				await page.reload();
+				await new Promise((_func) => setTimeout(_func, 10000));
 		}
 		
 		const page2 = await browser.newPage();
@@ -101,6 +102,7 @@ const run = async () => {
 					while (!(await sendLogin())) {
 						console.log(new Date(), 'Trying login...');
 						await page.reload();
+						await new Promise((_func) => setTimeout(_func, 10000));
 					}
 					console.log(new Date(), `Status: Connected!`);
 				 } else {

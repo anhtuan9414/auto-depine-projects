@@ -88,6 +88,7 @@ const run = async () => {
 		while (!(await sendLogin())) {
 				console.log('Trying login...');
 				await page.reload();
+				await new Promise((_func) => setTimeout(_func, 5000));
 		}
 		
 		const connectNode = async () => {
@@ -119,7 +120,7 @@ const run = async () => {
 		
 		while (!(await connectNode())) {
 				console.log('Trying connect node...');
-				await new Promise((_func) => setTimeout(_func, 10000));
+				await new Promise((_func) => setTimeout(_func, 5000));
 		}
 		
 		
@@ -150,16 +151,17 @@ const run = async () => {
 					Object.keys(rs).forEach(key => {
 						console.log(key + ':', rs[key]);
 					})
-				 } else if (await newPage.waitForSelector("::-p-xpath(//*[text()='Sign In'])")) {
+				 } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Sign In'])")) {
 					console.log(new Date(), 'Account is logged out!');
 					console.log(new Date(), 'Trying login...');
 					while (!(await sendLogin())) {
 						console.log(new Date(), 'Trying login...');
 						await page.reload();
+						await new Promise((_func) => setTimeout(_func, 5000));
 					}
 					while (!(await connectNode())) {
 						console.log('Trying connect node...');
-						await new Promise((_func) => setTimeout(_func, 10000));
+						await new Promise((_func) => setTimeout(_func, 5000));
 					}
 					console.log(new Date(), `Status: Connected!`);
 				 } else {
