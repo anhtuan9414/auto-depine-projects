@@ -132,7 +132,7 @@ const run = async () => {
 				});
 				
 				if (status < 1) {
-					throw 'Solve captcha failed';
+					throw new Error('Solve captcha failed', status, data);
 				}
 				
 				console.log('Text captcha:', data);
