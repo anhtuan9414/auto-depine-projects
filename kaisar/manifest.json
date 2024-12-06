@@ -1,0 +1,26 @@
+{
+   "action": {
+      "default_popup": "popup/popup.html",
+      "default_title": "Kaisar ZeroNode"
+   },
+   "background": {
+      "service_worker": "background.js"
+   },
+   "content_scripts": [ {
+      "js": [ "content.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_idle"
+   } ],
+   "description": "Kaisar ZeroNode",
+   "host_permissions": [ "*://*.kaisar.io/*" ],
+   "icons": {
+      "128": "icons/logo.png",
+      "48": "icons/logo.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv9oZtrjnFoZVvppgTbFMnqUATiH71dTHSnTZMJ5jDsjx8/EeVEGbsw+A9mMn9jBy42/kJKGs/PQ9bKydBNL14YmjVvZkEBErKqWb2iPzh8/jdXL7l+MJgRAypu+UBaUSJDkpT2InJXuwXSzVFvvwludqfxPK4lsvGmbBTo1hsFI2g0qhzykHCU1g7X2HWET7yIbmezOkEKvHQg1RlWQ97ngZ5AxIsnHmBvuVTbnGzEiwT3RonRWm0zDYb01/aS07hW/QahvecVxBgwBvCWYSCBDfQKlgh/v5CNzpdTR7LNYMNqlmnu3hKFsc2rsVrtVJwUUj/tG/cbjpKBBNa0wv5wIDAQAB",
+   "manifest_version": 3,
+   "name": "Kaisar ZeroNode",
+   "permissions": [ "cookies", "storage", "alarms", "activeTab" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.0.4"
+}
