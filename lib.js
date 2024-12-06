@@ -606,6 +606,7 @@ const sendExtension = async ({ user, pass }, page) => {
 const getGraStatus = async (browser, page, user) => {
     try {
         let value3 = "N/A";
+		let status = true;
 		await page.setRequestInterception(true);
 		page.on("request", (req) => {
 			if (
@@ -653,41 +654,17 @@ const getGraStatus = async (browser, page, user) => {
                     await page.reload();
                     await new Promise((_func) => setTimeout(_func, 5000));
                     value3 = await printStats(page);
-                    if (
-                        value3.toLowerCase() == "disconnected" ||
-                        value3.toLowerCase() == "unsupported"
-                    ) {
-						console.log("Logout account");
-						await page.click('.avatar-container');
-						await new Promise((_func) => setTimeout(_func, 3000));
-						await page.click("::-p-xpath(//*[text()='Log out'])");
-						await new Promise((_func) => setTimeout(_func, 10000));
-						const page3 = (await browser.pages())[1];
-						page.close();
-						console.log("Logout successfully");
-                        return {
-                            status: false,
-                            text: value3,
-                            page: page3,
-                        };
-                    }
-                } else {
-					const page2 = await browser.newPage();
-					page.close();
-                    return {
-                        status: false,
-                        text: value3,
-                        page: page2,
-                    };
                 }
+				status = false;
             }
         } catch (error) {
             console.log("🚀 ~ getGraStatus ~ error:", error);
         }
+		
         const page2 = await browser.newPage();
         page.close();
         return {
-            status: true,
+            status: status,
             text: value3,
             page: page2,
         };

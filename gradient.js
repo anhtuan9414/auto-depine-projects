@@ -98,7 +98,7 @@ async function main() {
                 console.log("🚀 ~ checkStatus ~ error:", error);
 				throw error;
             }
-        }, 600000);
+        }, 3600000);
     };
 	
 	const checkStatusWithoutLogin = () => {
@@ -130,7 +130,7 @@ async function main() {
                 console.log("🚀 ~ checkStatusWithoutLogin ~ error:", error);
 				throw error;
             }
-        }, 600000);
+        }, 3600000);
     };
 	
 	const getRandomInterval = (minMinutes, maxMinutes) => {
