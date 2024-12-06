@@ -123,12 +123,12 @@ const run = async () => {
 				 if (await waitForElementExists(page, ".point-container")) {
 					await page.waitForSelector('button');
 					
-					const result = await page.evaluate(() => {
+					const rs = await page.evaluate(() => {
 					  const textButton = document.querySelector('button').textContent.trim();
 					  return { startButtonExists: textButton.includes('Start'), textButton };
 					});
 					
-					if (result.startButtonExists) {
+					if (rs.startButtonExists) {
 						console.log('Click start mining!');
 						await page.click('button');
 						await new Promise((_func) => setTimeout(_func, 5000));
@@ -167,12 +167,12 @@ const run = async () => {
 					await new Promise((_func) => setTimeout(_func, 10000));
 					await page.waitForSelector('button');
 					
-					const result = await page.evaluate(() => {
+					const rs = await page.evaluate(() => {
 					  const textButton = document.querySelector('button').textContent.trim();
 					  return { startButtonExists: textButton.includes('Start'), textButton };
 					});
 					
-					if (result.startButtonExists) {
+					if (rs.startButtonExists) {
 						console.log('Click start mining!');
 						await page.click('button');
 						await new Promise((_func) => setTimeout(_func, 5000));
