@@ -122,7 +122,7 @@ const run = async () => {
             } catch (err) {
                 console.error('Error refreshing page:', err);
             }
-        }, 600000);
+        }, 3600000);
     } catch (err) {
         console.error(`Error: ${err.message}`);
         if (browser) await browser.close();
