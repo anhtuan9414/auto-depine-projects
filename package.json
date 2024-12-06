@@ -11,6 +11,7 @@
     "pipe": "node pipe.js",
     "oasis": "node oasis.js",
     "dawn": "node dawn.js",
+    "kaisar": "node kaisar.js",
     "gradient-mini": "node gradient-mini.js",
     "dev-gradient": "node --env-file=.env gradient.js",
     "dev-gradient-mini": "node --env-file=.env gradient-mini.js",
@@ -19,7 +20,8 @@
     "dev-teoneo": "node --env-file=.env teoneo.js",
     "dev-pipe": "node --env-file=.env pipe.js",
     "dev-oasis": "node --env-file=.env oasis.js",
-    "dev-dawn": "node --env-file=.env dawn.js"
+    "dev-dawn": "node --env-file=.env dawn.js",
+    "dev-kaisar": "node --env-file=.env kaisar.js"
   },
   "author": "",
   "license": "ISC",

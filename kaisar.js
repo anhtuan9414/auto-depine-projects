@@ -69,8 +69,8 @@ const run = async () => {
 					// Wait for the login form to load
 					await page.waitForSelector('input#username', { timeout: 30000 });
 					await page.waitForSelector('input#password');
-					await page.type('input#username', 'kojinyoji@gmail.com', { delay: 50 }); // Simulate typing
-					await page.type('input#password', 'anhtuan123', { delay: 50 });
+					await page.type('input#username', process.env.KAISAR_USERNAME, { delay: 50 }); // Simulate typing
+					await page.type('input#password', process.env.KAISAR_PASSWORD, { delay: 50 });
 
 					// Click the login button
 					await page.keyboard.press("Enter");
@@ -122,6 +122,18 @@ const run = async () => {
 				
 				 if (await waitForElementExists(page, ".point-container")) {
 					await page.waitForSelector('button');
+					
+					const result = await page.evaluate(() => {
+					  const textButton = document.querySelector('button').textContent.trim();
+					  return { startButtonExists: textButton.includes('Start'), textButton };
+					});
+					
+					if (result.startButtonExists) {
+						console.log('Click start mining!');
+						await page.click('button');
+						await new Promise((_func) => setTimeout(_func, 5000));
+					}
+					
 					const result = await page.evaluate(() => {
 					  const farmingButtonExists = document.querySelector('button.farming') !== null;
 					  const textButton = document.querySelector('button').textContent.trim();
@@ -154,6 +166,18 @@ const run = async () => {
 					await conncetNode();
 					await new Promise((_func) => setTimeout(_func, 10000));
 					await page.waitForSelector('button');
+					
+					const result = await page.evaluate(() => {
+					  const textButton = document.querySelector('button').textContent.trim();
+					  return { startButtonExists: textButton.includes('Start'), textButton };
+					});
+					
+					if (result.startButtonExists) {
+						console.log('Click start mining!');
+						await page.click('button');
+						await new Promise((_func) => setTimeout(_func, 5000));
+					}
+					
 					const result = await page.evaluate(() => {
 					  const farmingButtonExists = document.querySelector('button.farming') !== null;
 					  const textButton = document.querySelector('button').textContent.trim();
