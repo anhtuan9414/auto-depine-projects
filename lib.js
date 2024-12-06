@@ -125,7 +125,22 @@ async function loginGradient({ user, pass }) {
     await page2.waitForSelector(GRA_PASS_INPUT);
     // press enter
     await page2.keyboard.press("Enter");
-    await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+	
+	try {
+		await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])', { timeout: 60000 });
+	} catch (e) {
+		if (!tokenData) {
+			throw e;
+		}
+		console.log("Load dashboard failed, trying send token to extension ...");
+		await sendExtension(
+			{
+				user,
+				pass
+			},
+			page2,
+		);
+	}
 	console.log("Logged in successfully!");
     await page2.close();
     console.log("Go to", "extension page");
@@ -195,7 +210,21 @@ async function reloginGradient({ user, pass }, page, browser) {
     await page.waitForSelector(GRA_PASS_INPUT);
     // press enter
     await page.keyboard.press("Enter");
-    await page.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+    try {
+		await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])', { timeout: 60000 });
+	} catch (e) {
+		if (!tokenData) {
+			throw e;
+		}
+		console.log("Load dashboard failed, trying send token to extension ...");
+		await sendExtension(
+			{
+				user,
+				pass
+			},
+			page2,
+		);
+	}
     console.log("Logged in successfully!");
     const page2 = await browser.newPage();
     await page.close();
