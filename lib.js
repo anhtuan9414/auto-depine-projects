@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer-extra");
 const timers = require("node:timers/promises");
 const path = require("path");
+const axios = require("axios");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const puppeteerStealth = StealthPlugin();
 // puppeteerStealth.enabledEvasions.delete("user-agent-override");
@@ -23,7 +24,7 @@ const pathToDawn = path.join(process.cwd(), "dawn");
 const rejectResourceTypes = ["image", "font"];
 const rejectRequestPattern = [];
 let tokenData;
-let nodeId;
+let nodeId = "N/A";
 
 async function loginBlockmesh({ user, pass }) {
     const { browser, page } = await loginAndOpenExtension(
@@ -72,8 +73,11 @@ async function loginGradient({ user, pass }) {
         ) {
             try {
                 const match = req.url().match(/\/([^\/]+)$/);
-                nodeId = match ? match[1] : "N/A";
-                console.log("Get Node ID:", nodeId);
+                const newNodeId = match ? match[1] : "N/A";
+				if (newNodeId != nodeId) {
+					nodeId = newNodeId;
+					console.log("Get Node ID:", nodeId);
+				}
             } catch (error) {}
         }
         return req.continue();
@@ -86,12 +90,13 @@ async function loginGradient({ user, pass }) {
     console.log("Go to", "https://app.gradient.network");
     await page2.setRequestInterception(true);
     page2.on("request", (req) => {
-        if (
+       if (
             !![
                 ...rejectRequestPattern,
+                "https://app.gradient.network/dashboard",
                 "https://app.gradient.network/favicon.ico",
             ].find((pattern) => req.url().match(pattern)) ||
-            [...rejectResourceTypes, "stylesheet"].includes(
+            [...rejectResourceTypes, "script", "stylesheet"].includes(
                 req.resourceType(),
             )
         ) {
@@ -125,23 +130,28 @@ async function loginGradient({ user, pass }) {
     await page2.waitForSelector(GRA_PASS_INPUT);
     // press enter
     await page2.keyboard.press("Enter");
-	
-	try {
-		await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])', { timeout: 60000 });
-	} catch (e) {
-		if (!tokenData) {
-			throw e;
-		}
-		console.log("Load dashboard failed, trying send token to extension ...");
-		await sendExtension(
-			{
-				user,
-				pass
-			},
-			page2,
-		);
-	}
-	console.log("Logged in successfully!");
+	await new Promise((_func) => setTimeout(_func, 10000));
+    //await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+    let exists = false;
+    try {
+        await page2.waitForSelector(GRA_PASS_INPUT, {
+            timeout: 5000,
+        });
+		
+		await page2.reload();
+		
+		await new Promise((_func) => setTimeout(_func, 10000));
+		await page2.waitForSelector(GRA_PASS_INPUT, {
+            timeout: 5000,
+        });
+		
+        exists = true;
+    } catch (e) {}
+    if (exists) {
+        throw new Error("Login failed");
+    } else {
+        console.log("Logged in successfully!");
+    }
     await page2.close();
     console.log("Go to", "extension page");
     await page.reload();
@@ -172,9 +182,12 @@ async function reloginGradient({ user, pass }, page, browser) {
                 ...rejectRequestPattern,
                 "https://app.gradient.network/favicon.ico",
             ].find((pattern) => req.url().match(pattern)) ||
-            [...rejectResourceTypes, "stylesheet"].includes(
+             ([...rejectResourceTypes, "script", "stylesheet"].includes(
                 req.resourceType(),
-            )
+            ) &&
+                ["https://app.gradient.network/dashboard"].find((pattern) =>
+                    req.url().match(pattern),
+                ))
         ) {
             return req.abort();
         }
@@ -210,22 +223,27 @@ async function reloginGradient({ user, pass }, page, browser) {
     await page.waitForSelector(GRA_PASS_INPUT);
     // press enter
     await page.keyboard.press("Enter");
+     await new Promise((_func) => setTimeout(_func, 10000));
+    //await page.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+    let exists = false;
     try {
-		await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])', { timeout: 60000 });
-	} catch (e) {
-		if (!tokenData) {
-			throw e;
-		}
-		console.log("Load dashboard failed, trying send token to extension ...");
-		await sendExtension(
-			{
-				user,
-				pass
-			},
-			page2,
-		);
-	}
-    console.log("Logged in successfully!");
+        await page2.waitForSelector(GRA_PASS_INPUT, {
+            timeout: 5000,
+        });
+		
+		await page2.reload();
+		
+		await new Promise((_func) => setTimeout(_func, 10000));
+		await page2.waitForSelector(GRA_PASS_INPUT, {
+            timeout: 5000,
+        });
+        exists = true;
+    } catch (e) {}
+    if (exists) {
+        throw new Error("Login failed");
+    } else {
+        console.log("Logged in successfully!");
+    }
     const page2 = await browser.newPage();
     await page.close();
     await page2.setRequestInterception(true);
@@ -246,8 +264,11 @@ async function reloginGradient({ user, pass }, page, browser) {
         ) {
             try {
                 const match = req.url().match(/\/([^\/]+)$/);
-                nodeId = match ? match[1] : "N/A";
-                console.log("Get Node ID:", nodeId);
+                const newNodeId = match ? match[1] : "N/A";
+				if (newNodeId != nodeId) {
+					nodeId = newNodeId;
+					console.log("Get Node ID:", nodeId);
+				}
             } catch (error) {}
         }
         return req.continue();
@@ -371,6 +392,160 @@ const printStats = async (page) => {
     return value3;
 };
 
+function getRandomHeaderValue(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getRandomMilliseconds(fromMs, toMs) {
+    return Math.floor(Math.random() * (toMs - fromMs + 1)) + fromMs;
+}
+
+
+const signInWithPassword = async (user, pass, key) => {
+    console.log("Get new token");
+    const url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
+        key;
+
+    const headers = {
+        scheme: "https",
+        accept: "*/*",
+        priority: "u=1, i",
+        "accept-encoding": getRandomHeaderValue([
+            "gzip, deflate, br",
+            "gzip, deflate, br, zstd",
+        ]),
+        "accept-language": getRandomHeaderValue([
+            "en-US,en;q=0.9,vi;q=0.8",
+            "en-GB,en;q=0.9",
+            "en;q=0.8",
+        ]),
+        origin: "https://app.gradient.network",
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Content-Type": "application/json",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "cross-site",
+        "x-client-data":
+            "CIy2yQEIo7bJAQipncoBCNCgygEI/9/KAQiUocsBCIWgzQEIjafNAQjTx84BCIjMzgEI9c/OAQ==",
+        "x-client-version": "Chrome/JsCore/10.13.0/FirebaseCore-web",
+        "x-firebase-gmpid": "1:236765003043:web:4300552603f2d14908a096",
+    };
+
+    const data = {
+        returnSecureToken: true,
+        email: user,
+        password: pass,
+        clientType: "CLIENT_TYPE_WEB",
+    };
+
+    try {
+        const response = await axios.post(url, data, {
+            ...headers,
+            authority: "identitytoolkit.googleapis.com",
+            path: "/v1/accounts:signInWithPassword?key=" + key,
+        });
+        tokenData = {
+            accessToken: response.data.idToken,
+            uid: response.data.localId,
+            refreshToken: response.data.refreshToken,
+        };
+
+        try {
+            await new Promise((_func) =>
+                setTimeout(_func, getRandomMilliseconds(500, 2000)),
+            );
+            await axios.post(
+                "https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=" +
+                    key,
+                {
+                    idToken: response.data.idToken,
+                },
+                { headers },
+            );
+
+            await new Promise((_func) =>
+                setTimeout(_func, getRandomMilliseconds(500, 2000)),
+            );
+            await axios.post(
+                "https://api.gradient.network/api/user/profile",
+                {},
+                {
+                    headers: {
+                        ...headers,
+                        authorization: "Bearer " + response.data.idToken,
+                    },
+                    referrer: "https://app.gradient.network/",
+                    referrerPolicy: "strict-origin-when-cross-origin",
+                },
+            );
+
+            const end = new Date().getTime();
+
+            await new Promise((_func) =>
+                setTimeout(_func, getRandomMilliseconds(500, 2000)),
+            );
+
+            await axios.post(
+                "https://api.gradient.network/api/point/stats",
+                {
+                    start: end - 2592000000,
+                    end: end,
+                    type: "DAY",
+                },
+                {
+                    headers: {
+                        ...headers,
+                        authorization: "Bearer " + response.data.idToken,
+                    },
+                    referrer: "https://app.gradient.network/",
+                    referrerPolicy: "strict-origin-when-cross-origin",
+                },
+            );
+        } catch (error) {
+            console.log("Ignore error when emulator calls");
+        }
+
+        console.log("Sync new token:", tokenData.accessToken.slice(-4));
+        return tokenData;
+    } catch (error) {
+        console.error(
+            "Error:",
+            error.response ? error.response.data : error.message,
+        );
+        throw error;
+    }
+};
+
+async function gradientWithoutLogin({ user, pass, key }) {
+    const { browser, page } = await loginAndOpenExtension(
+        {
+            user,
+            pass,
+        },
+        pathToGradient,
+    );
+    await signInWithPassword(user, pass, key);
+    await sendExtension(
+        {
+            user,
+            pass,
+            key,
+        },
+        page,
+    );
+    page.close();
+    await new Promise((_func) => setTimeout(_func, 5000));
+    (await browser.pages())[0].close();
+    const page3 = await browser.newPage();
+    console.log("Extension is activated!");
+    return {
+        browser,
+        page: page3,
+    };
+}
+
 const sendExtension = async ({ user, pass }, page) => {
     if (!tokenData) {
         throw "Token Data is empty";
@@ -440,6 +615,21 @@ const getGraStatus = async (browser, page, user) => {
 				rejectResourceTypes.includes(req.resourceType())
 			) {
 				return req.abort();
+			}
+			if (
+				req
+					.url()
+					.includes("https://api.gradient.network/api/sentrynode/get") &&
+				req.method() === "GET"
+			) {
+				try {
+					const match = req.url().match(/\/([^\/]+)$/);
+					const newNodeId = match ? match[1] : "N/A";
+					if (newNodeId != nodeId) {
+						nodeId = newNodeId;
+						console.log("Get Node ID:", nodeId);
+					}
+				} catch (error) {}
 			}
 			return req.continue();
 		});
@@ -538,5 +728,7 @@ module.exports = {
     getFrame,
     getGraStatus,
     reloginGradient,
-	sendExtension
+	sendExtension,
+	gradientWithoutLogin,
+	signInWithPassword
 };

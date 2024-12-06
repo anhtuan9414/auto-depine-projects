@@ -73,7 +73,7 @@ async function main() {
                     return; // Exit if retry occurs
                 } else {
                     console.log("Closing all browser instances");
-                    await localPage.close();
+                    localPage.close();
                     await localBrowser.close();
                     throw error;
                 }

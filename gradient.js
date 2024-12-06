@@ -1,5 +1,5 @@
 const timers = require("node:timers/promises");
-const { getGraStatus, loginGradient, reloginGradient, sendExtension } = require("./lib");
+const { getGraStatus, loginGradient, reloginGradient, sendExtension, gradientWithoutLogin } = require("./lib");
 const axios = require("axios").default;
 const { HttpsProxyAgent } = require("https-proxy-agent");
 const {
@@ -12,7 +12,7 @@ async function main() {
     // extract user
     // let [user, offset] = process.env.GRASS_USER.split("-");
     // let users = await getUsers(user + "@gmail.com", offset);
-    let user = { id: "Depin", user: process.env.USER, pass: process.env.PASS };
+    let user = { id: "Depin", user: process.env.USER, pass: process.env.PASS, key: process.env.KEY };
     console.log("🚀 ~ Start Script ~");
 
     let localBrowser;
@@ -30,6 +30,19 @@ async function main() {
         localPage = page;
         return text;
     };
+	
+	 const startExtensionWithoutLogin = async function (user) {
+        let { browser, page: localPage1 } = await gradientWithoutLogin(user);
+        localPage = localPage1;
+        localBrowser = browser;
+		let { status, text, page } = await getGraStatus(
+            localBrowser,
+            localPage,
+            user,
+        );
+        localPage = page;
+		return text;
+    };
 
     const restartExtension = async function (user) {
         console.log("Relogin extension...");
@@ -41,6 +54,18 @@ async function main() {
         );
         localPage = page;
         return text;
+    };
+	
+	const restartExtensionWithoutLogin = async (user) => {
+        console.log("Relogin extension...");
+		await signInWithPassword(user.user, user.pass, user.key);
+		await sendExtension(user, localPage);
+		let { status, text, page } = await getGraStatus(
+            localBrowser,
+            localPage,
+            user,
+        );
+		return text;
     };
 
     let interval;
@@ -71,6 +96,38 @@ async function main() {
             } catch (error) {
                 clearInterval(interval);
                 console.log("🚀 ~ checkStatus ~ error:", error);
+				throw error;
+            }
+        }, 600000);
+    };
+	
+	const checkStatusWithoutLogin = () => {
+        interval = setInterval(async () => {
+            try {
+                let { status, text, page } = await getGraStatus(
+                    localBrowser,
+                    localPage,
+                    user,
+                );
+                localPage = page;
+                if (text.toLowerCase() == "unsupported") {
+                    clearInterval(interval);
+                    return;
+                } else {
+                    if (!status) {
+                        clearInterval(interval);
+                        if (
+                            (await restartExtensionWithoutLogin(user)).toLowerCase() ==
+                            "unsupported"
+                        ) {
+                            return;
+                        }
+                        checkStatusWithoutLogin();
+                    }
+                }
+            } catch (error) {
+                clearInterval(interval);
+                console.log("🚀 ~ checkStatusWithoutLogin ~ error:", error);
 				throw error;
             }
         }, 600000);
@@ -120,10 +177,16 @@ async function main() {
 		);
 		setTimeout(executeWithDynamicInterval, initialInterval);
 	};
-		
-	if ((await startExtension(user)).toLowerCase() != "unsupported") {
-		checkStatus();
-    }
+	
+	if (!process.env.MODE || process.env.MODE=='0') {
+		if ((await startExtension(user)).toLowerCase() != "unsupported") {
+			checkStatus();
+		}
+	} else {
+		if ((await startExtensionWithoutLogin(user)).toLowerCase() != "unsupported") {
+			checkStatusWithoutLogin();
+		}
+	}
 	
 	//send();
 }
