@@ -73,7 +73,7 @@ async function main() {
                 console.log("🚀 ~ checkStatus ~ error:", error);
 				throw error;
             }
-        }, 300000);
+        }, 600000);
     };
 	
 	const getRandomInterval = (minMinutes, maxMinutes) => {
@@ -106,7 +106,7 @@ async function main() {
 				newPage.close();
 			}
 			// Schedule the next execution with a dynamic interval
-			const interval = getRandomInterval(30, 50); // between 30 mins to 50 mins
+			const interval = getRandomInterval(30, 90); // between 30 mins to 90 mins
 			console.log(
 				`Send extension execution in ${interval / 60000} minutes.`,
 			);

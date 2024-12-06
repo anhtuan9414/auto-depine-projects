@@ -89,10 +89,9 @@ async function loginGradient({ user, pass }) {
         if (
             !![
                 ...rejectRequestPattern,
-                "https://app.gradient.network/dashboard",
                 "https://app.gradient.network/favicon.ico",
             ].find((pattern) => req.url().match(pattern)) ||
-            [...rejectResourceTypes, "script", "stylesheet"].includes(
+            [...rejectResourceTypes, "stylesheet"].includes(
                 req.resourceType(),
             )
         ) {
@@ -126,28 +125,8 @@ async function loginGradient({ user, pass }) {
     await page2.waitForSelector(GRA_PASS_INPUT);
     // press enter
     await page2.keyboard.press("Enter");
-    await new Promise((_func) => setTimeout(_func, 10000));
-    //await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
-    let exists = false;
-    try {
-        await page2.waitForSelector(GRA_PASS_INPUT, {
-            timeout: 5000,
-        });
-		
-		await page2.reload();
-		
-		await new Promise((_func) => setTimeout(_func, 10000));
-		await page2.waitForSelector(GRA_PASS_INPUT, {
-            timeout: 5000,
-        });
-		
-        exists = true;
-    } catch (e) {}
-    if (exists) {
-        throw new Error("Login failed");
-    } else {
-        console.log("Logged in successfully!");
-    }
+    await page2.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+	console.log("Logged in successfully!");
     await page2.close();
     console.log("Go to", "extension page");
     await page.reload();
@@ -178,12 +157,9 @@ async function reloginGradient({ user, pass }, page, browser) {
                 ...rejectRequestPattern,
                 "https://app.gradient.network/favicon.ico",
             ].find((pattern) => req.url().match(pattern)) ||
-            ([...rejectResourceTypes, "script", "stylesheet"].includes(
+            [...rejectResourceTypes, "stylesheet"].includes(
                 req.resourceType(),
-            ) &&
-                ["https://app.gradient.network/dashboard"].find((pattern) =>
-                    req.url().match(pattern),
-                ))
+            )
         ) {
             return req.abort();
         }
@@ -219,27 +195,8 @@ async function reloginGradient({ user, pass }, page, browser) {
     await page.waitForSelector(GRA_PASS_INPUT);
     // press enter
     await page.keyboard.press("Enter");
-    await new Promise((_func) => setTimeout(_func, 10000));
-    //await page.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
-    let exists = false;
-    try {
-        await page2.waitForSelector(GRA_PASS_INPUT, {
-            timeout: 5000,
-        });
-		
-		await page2.reload();
-		
-		await new Promise((_func) => setTimeout(_func, 10000));
-		await page2.waitForSelector(GRA_PASS_INPUT, {
-            timeout: 5000,
-        });
-        exists = true;
-    } catch (e) {}
-    if (exists) {
-        throw new Error("Login failed");
-    } else {
-        console.log("Logged in successfully!");
-    }
+    await page.waitForSelector('::-p-xpath(//a[@href="/dashboard/setting"])');
+    console.log("Logged in successfully!");
     const page2 = await browser.newPage();
     await page.close();
     await page2.setRequestInterception(true);
