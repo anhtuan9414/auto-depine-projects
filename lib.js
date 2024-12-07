@@ -165,7 +165,7 @@ async function loginGradient({ user, pass }) {
     return { browser, page: page3 };
 }
 
-const waitForElementExists = async (page, selector, timeout = 5000) => {
+const waitForElementExists = async (page, selector, timeout = 10000) => {
     try {
         await page.waitForSelector(selector, { timeout });
         return true;
@@ -385,7 +385,7 @@ const printStats = async (page) => {
     );
     let value = await page.evaluate((el) => el.textContent, element);
     let value2 = await page.evaluate((el) => el.textContent, element2);
-    console.log("Status:", value3);
+    console.log(new Date(), "Status:", value3);
     console.log(
         `Today's Taps: ${value2} ; Today's Uptime: ${value} ; Node ID: ${nodeId}`,
     );
@@ -645,17 +645,40 @@ const getGraStatus = async (browser, page, user) => {
                 (value3.toLowerCase() == "disconnected" ||
                     value3.toLowerCase() == "unsupported")
             ) {
-                if (value3.toLowerCase() == "disconnected" && tokenData) {
-                    console.log("Trying send token...");
+                if (value3.toLowerCase() == "disconnected") {
+                    /*console.log("Trying send token...");
                     const page2 = await browser.newPage();
                     await sendExtension(user, page2);
                     await new Promise((_func) => setTimeout(_func, 5000));
 					page2.close();
                     await page.reload();
                     await new Promise((_func) => setTimeout(_func, 5000));
-                    value3 = await printStats(page);
-                }
-				status = false;
+                    value3 = await printStats(page);*/
+					let page2 = await browser.newPage();
+					console.log("Trying reload gradient dashboard...")
+					console.log("Go to", "https://app.gradient.network");
+					await page2.goto("https://app.gradient.network", {
+						timeout: 60000,
+						waitUntil: "networkidle2",
+					});
+					await new Promise((_func) => setTimeout(_func, 10000));
+					if (await waitForElementExists(GRA_USER_INPUT)) {
+						console.log("Account logout!");
+						page2.close();
+						status = false;
+					} else {
+						console.log("Reloading extension page...");
+						page2.close();
+						await page.reload();
+						await new Promise((_func) => setTimeout(_func, 10000));
+						value3 = await printStats(page);
+						if (value3.toLowerCase() == "disconnected" || value3.toLowerCase() == "unsupported") {
+							status = false;
+						}
+					}
+                } else {
+					status = false;
+				}
             }
         } catch (error) {
             console.log("🚀 ~ getGraStatus ~ error:", error);
