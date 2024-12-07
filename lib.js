@@ -656,22 +656,23 @@ const getGraStatus = async (browser, page, user) => {
                     value3 = await printStats(page);*/
 					let page2 = await browser.newPage();
 					console.log("Trying reload gradient dashboard...")
-					console.log("Go to", "https://app.gradient.network");
 					await page2.goto("https://app.gradient.network", {
 						timeout: 60000,
 						waitUntil: "networkidle2",
 					});
 					await new Promise((_func) => setTimeout(_func, 10000));
+					console.log("Reload dashboard done!")
 					if (await waitForElementExists(GRA_USER_INPUT)) {
 						console.log("Account logout!");
 						page2.close();
 						status = false;
 					} else {
-						console.log("Reloading extension page...");
+						console.log("Reloading extension...");
 						page2.close();
 						await page.reload();
 						await new Promise((_func) => setTimeout(_func, 10000));
 						value3 = await printStats(page);
+						console.log("Reload extension done!")
 						if (value3.toLowerCase() == "disconnected" || value3.toLowerCase() == "unsupported") {
 							status = false;
 						}
