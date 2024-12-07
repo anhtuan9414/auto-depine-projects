@@ -103,7 +103,7 @@ const run = async () => {
 
 		await setPagaInfo();
         console.log(`Navigating to ${extensionUrl} ...`);
-        await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+        await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 		await new Promise((_func) => setTimeout(_func, 5000));
 		
 		const sendLogin = async () => {
@@ -166,7 +166,7 @@ const run = async () => {
         setInterval(async () => {
             try {
 				await setPagaInfo();
-				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 				await new Promise((_func) => setTimeout(_func, 5000));
 				
 				 if (await waitForElementExists(page, "a[href='dashboard.html']")) {

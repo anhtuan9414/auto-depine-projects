@@ -52,7 +52,7 @@ const run = async () => {
         );
 
         console.log(`Navigating to ${extensionUrl} ...`);
-        await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+        await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 		
 		
 		const sendLogin = async () => {
@@ -94,7 +94,7 @@ const run = async () => {
 		console.log('Monitoring connection status...');
         setInterval(async () => {
             try {
-				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 				const iframeHandle = await page.waitForSelector("iframe", {
 					visible: true,
 				});

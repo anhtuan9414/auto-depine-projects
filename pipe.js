@@ -52,7 +52,7 @@ const run = async () => {
         );
 
         console.log(`Navigating to ${extensionUrl} ...`);
-        await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+        await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 		
 		
 		const sendLogin = async () => {
@@ -96,7 +96,7 @@ const run = async () => {
 		console.log('Monitoring connection status...');
         setInterval(async () => {
             try {
-				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 				await new Promise((_func) => setTimeout(_func, 5000));
 				const isLoginHidden = await page.$eval('#login-container', (element) => {
 				  return window.getComputedStyle(element).display === 'none';

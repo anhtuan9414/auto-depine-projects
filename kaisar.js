@@ -53,7 +53,7 @@ const run = async () => {
         );
 
         console.log(`Navigating to ${extensionUrl} ...`);
-        await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+        await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 		
 		const conncetNode = async () => {
 			if (await waitForElementExists(page, "::-p-xpath(//*[text()='Login'])")) {
@@ -117,7 +117,7 @@ const run = async () => {
 		
 		setInterval(async () => {
             try {
-				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 				await new Promise((_func) => setTimeout(_func, 10000));
 				
 				 if (await waitForElementExists(page, ".point-container")) {

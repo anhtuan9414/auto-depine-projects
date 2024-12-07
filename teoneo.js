@@ -66,7 +66,7 @@ const run = async () => {
         );
 
         console.log(`Navigating to ${extensionUrl} ...`);
-        await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+        await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 		
 		const conncetNode = async () => {
 			if (await waitForElementExists(page, "::-p-xpath(//*[text()='Continue'])")) {
@@ -112,7 +112,7 @@ const run = async () => {
 		console.log('Monitoring connection status...');
         setInterval(async () => {
             try {
-				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 				//await page.reload({waitUntil: "networkidle2"});
                 if (await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])")) {
 					const rs = await page.evaluate(() => {

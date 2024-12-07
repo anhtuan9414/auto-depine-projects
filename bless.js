@@ -86,18 +86,18 @@ const run = async () => {
         );
 
         console.log(`Navigating to https://bless.network/dashboard website...`);
-        await page.goto('https://bless.network/dashboard', { waitUntil: "load" });
+        await page.goto('https://bless.network/dashboard', { waitUntil: "load", timeout: 0 });
 
         await addCookieToLocalStorage(page, cookie);
 
         while (!(await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])"))) {
             console.log(`Refreshing to check login...`);
-            await page.goto('https://bless.network/dashboard');
+            await page.goto('https://bless.network/dashboard', { timeout: 0 });
         }
 		
         console.log('Logged in successfully!');
 
-        await page.goto(extensionUrl);
+        await page.goto(extensionUrl, {timeout: 0});
         while (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
             console.log('Clicking the extension login button...');
             await page.click("::-p-xpath(//*[text()='Log in'])");

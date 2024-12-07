@@ -59,7 +59,7 @@ const run = async () => {
         );
 
         console.log(`Navigating to ${extensionUrl} ...`);
-        await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+        await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 		
 		const sendLogin = async () => {
 			try {
@@ -130,6 +130,7 @@ const run = async () => {
 		
 		
 		const page2 = await browser.newPage();
+		await page2.setDefaultNavigationTimeout(0); 
 		page.close();
 		page = page2;
 		
@@ -137,7 +138,7 @@ const run = async () => {
 		failed = 0;
         setInterval(async () => {
             try {
-				await page.goto(extensionUrl , {waitUntil: "networkidle2"});
+				await page.goto(extensionUrl , {waitUntil: "networkidle2", timeout: 0});
 				 if (await waitForElementExists(page, "::-p-xpath(//*[text()='View on Dashboard'])")) {
 					 console.log(new Date(), `Status: Connected!`);
 					 const rs = await page.evaluate(() => {
