@@ -72,7 +72,7 @@ const run = async () => {
 				console.log('Login successful!');
 				return true;
 			} catch (err){
-				console.log('Login failed!', e);
+				console.log('Login failed!', err);
 				if (failed >= 10) {
 					throw err;
 				}
