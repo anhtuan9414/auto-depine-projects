@@ -3,10 +3,11 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const puppeteerStealth = StealthPlugin();
 const path = require('path');
 
-const setupLogging = (args) => {
-    console.log = (...args) => console.info(new Date().toISOString(), ...args);
-    console.error = (...args) => console.error(new Date().toISOString(), ...args);
-};
+let nodeId = 'N/A';
+
+const log = (text, ...value) => {
+	console.log(new Date(), text, ...value);
+}
 
 const waitForElementExists = async (page, selector, timeout = 10000) => {
     try {
@@ -20,13 +21,13 @@ const waitForElementExists = async (page, selector, timeout = 10000) => {
 const checkActiveElement = async (page) => {
     try {
 		if (await waitForElementExists(page, 'button[data-state="unchecked"]')){
-			console.log("Extension is unchecked!");
+			log("Extension is unchecked!");
 			await page.click('button[data-state="unchecked"]');
 		}
         await page.waitForSelector('button[data-state="checked"]', { timeout: 10000 });
-        console.log("Extension is checked!");
+        log("Extension is checked!");
     } catch {
-        console.error("Failed to find 'checked' element. Extension activation failed.");
+        log("Failed to find 'checked' element. Extension activation failed.");
     }
 };
 
@@ -39,22 +40,23 @@ const setLocalStorageItem = async (page, key, value) => {
 
 const addCookieToLocalStorage = async (page, cookieValue) => {
     const result = await setLocalStorageItem(page, 'B7S_AUTH_TOKEN', cookieValue);
-    console.log("Your token can be used to log in for 7 days.");
+    log("Your token can be used to log in for 7 days.");
 };
 
 const run = async () => {
     //setupLogging();
     const secUntilRestart = 60;
-    console.log(`Started the script`);
+    log(`Started the script`);
 
     const cookie = process.env.BLESS_TOKEN;
     const extensionId = 'pljbjcehnhcnofmkdbjolghdcjnmekia';
     const extensionUrl = `chrome-extension://${extensionId}/index.html`;
 
     if (!cookie) {
-        console.error('No cookie provided. Please set the B7S_AUTH_TOKEN environment variable.');
+        log('No cookie provided. Please set the B7S_AUTH_TOKEN environment variable.');
         return;
     }
+	
 	const pathToBless = path.join(process.cwd(), "bless");
     const browserArgs = [
 		"--no-sandbox",
@@ -77,56 +79,123 @@ const run = async () => {
     ];
 
     let browser, page;
+	let failed = 0;
 
     try {
-        browser = await puppeteer.launch({ headless: false, args: browserArgs });
+        browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = await browser.newPage();
-        await page.setUserAgent(
+		
+		 const setPagaInfo = async () => {
+			await page.setUserAgent(
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-        );
+			);
+			
+			await page.setRequestInterception(true);
+			page.on('request', (request) => {
+			  if (
+				request
+					.url()
+					.includes("https://gateway-run.bls.dev/api/v1/nodes") &&
+				request.method() === "GET"
+				) {
+					try {
+						const match = request.url().match(/nodes\/([^\/]+)/);
+						const newNodeId = match ? match[1] : "N/A";
+						if (newNodeId != nodeId) {
+							nodeId = newNodeId;
+							log("Get Node ID:", nodeId);
+						}
+					} catch (error) {}
+				}
+				request.continue();
+			});
+		}
+		
+        await setPagaInfo();
 
-        console.log(`Navigating to https://bless.network/dashboard website...`);
+        log(`Navigating to https://bless.network/dashboard website...`);
         await page.goto('https://bless.network/dashboard', { waitUntil: "load", timeout: 0 });
 
         await addCookieToLocalStorage(page, cookie);
 
         while (!(await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])"))) {
-            console.log(`Refreshing to check login...`);
+            log(`Refreshing to check login...`);
             await page.goto('https://bless.network/dashboard', { timeout: 0 });
         }
 		
-        console.log('Logged in successfully!');
+        log('Logged in successfully!');
 
         await page.goto(extensionUrl, {timeout: 0});
         while (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
-            console.log('Clicking the extension login button...');
+            log('Clicking the extension login button...');
             await page.click("::-p-xpath(//*[text()='Log in'])");
 			await new Promise((_func) => setTimeout(_func, 10000));
             await page.reload();
         }
+		
+        //await checkActiveElement(page);
 
-        await checkActiveElement(page);
-
-        console.log('Monitoring connection status...');
+		const page2 = await browser.newPage();
+		page.close();
+		page = page2;
+		failed = 0;
+        log('Monitoring connection status...');
         setInterval(async () => {
             try {
-                await page.reload({ waitUntil: 'load' });
-                if (await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])")) {
-                    console.log("Status: Connected!");
-                } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Disconnected'])")) {
-                    console.error("Status: Disconnected!");
-					await checkActiveElement(page);
-                } else {
-                    console.error("Status: Unknown!");
+				await setPagaInfo();
+                await page.goto(extensionUrl , {waitUntil: "load", timeout: 0});
+                if (await waitForElementExists(page, "::-p-xpath(//*[text()='Online'])")) {
+                    log("Status: Online!");
+					console.log(`Node ID: ${nodeId}`);
+					const rs = await page.evaluate(() => {
+						const elements = document.querySelectorAll('#root > div.overflow-hidden > div.flex.flex-col.items-center.justify-between.h-full > div:nth-child(1) div');
+						const elementCenter1 = document.querySelector('#root > div.overflow-hidden > div.flex.flex-col.items-center.justify-between.h-full > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)').textContent.trim();
+						const elementCenter2 = document.querySelector('#root > div.overflow-hidden > div.flex.flex-col.items-center.justify-between.h-full > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2)').textContent.trim();
+						const cpu = document.querySelector('div[title="CPU Usage"]');;
+						const ram = document.querySelector('div[title="Memory Usage"]');
+						const rs = {};
+		
+						for (let i = 0; i < elements.length; i++) {
+							if (!elements[i].querySelector('div:nth-child(1)') || !elements[i].querySelector('div:nth-child(2)')) {
+								continue;
+							}
+							const name = elements[i].querySelector('div:nth-child(1)').textContent.trim();
+							const value = elements[i].querySelector('div:nth-child(2)').textContent.trim();
+							rs[name] = value;
+						}
+						return {...rs, [elementCenter1]: elementCenter2, 'CPU Usage': cpu.textContent.trim(), 'Memory Usage': ram.textContent.trim()};
+					});
+					Object.keys(rs).forEach(key => {
+						console.log(key + ':', rs[key]);
+					})
+                } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Offline'])")) {
+                    log("Status: Offline!");
+					log(`Node ID: ${nodeId}`);
+					//await checkActiveElement(page);
+                } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
+					while (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
+						log('Clicking the extension login button...');
+						await page.click("::-p-xpath(//*[text()='Log in'])");
+						await new Promise((_func) => setTimeout(_func, 10000));
+						await page.reload();
+					}
+					log("Status: Online!");
+					log(`Node ID: ${nodeId}`);
+				} else {
+                    log("Status: Unknown!");
                 }
+				failed = 0;
             } catch (err) {
-                console.error('Error refreshing page:', err);
+                log('Error refreshing page:', err);
             }
+			const page2 = await browser.newPage();
+			page.close();
+			page = page2;
         }, 3600000);
     } catch (err) {
-        console.error(`Error: ${err.message}`);
+        log(`Error: ${err.message}`);
         if (browser) await browser.close();
-        console.log(`Restarting in ${secUntilRestart} seconds...`);
+        log(`Restarting in ${secUntilRestart} seconds...`);
         setTimeout(run, secUntilRestart * 1000);
     }
 };

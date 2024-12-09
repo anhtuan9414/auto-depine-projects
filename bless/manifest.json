@@ -10,7 +10,6 @@
       "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
    },
    "description": "Bless Browser Extension",
-   "differential_fingerprint": "1.2c432447a1d3a16defc0d747d2b4889292f3a8ed91dce2eb4f74292e1fe0bce5",
    "externally_connectable": {
       "matches": [ "http://localhost:3000/*", "https://run-dashboard.vercel.app/*", "https://bless.network/dashboard/*" ]
    },
@@ -23,5 +22,5 @@
    "name": "Bless",
    "permissions": [ "storage", "background", "system.cpu", "system.memory" ],
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "0.1.4"
+   "version": "0.1.5"
 }
