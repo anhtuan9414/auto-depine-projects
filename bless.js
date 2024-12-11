@@ -144,8 +144,9 @@ const run = async () => {
             try {
 				await setPagaInfo();
                 await page.goto(extensionUrl , {waitUntil: "load", timeout: 0});
+				await new Promise((_func) => setTimeout(_func, 10000));
                 if (await waitForElementExists(page, "::-p-xpath(//*[text()='Online'])")) {
-                    log("Status: Online!");
+                    log("Status: Online");
 					console.log(`Node ID: ${nodeId}`);
 					const rs = await page.evaluate(() => {
 						const elements = document.querySelectorAll('#root > div.overflow-hidden > div.flex.flex-col.items-center.justify-between.h-full > div:nth-child(1) div');
@@ -169,17 +170,20 @@ const run = async () => {
 						console.log(key + ':', rs[key]);
 					})
                 } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Offline'])")) {
-                    log("Status: Offline!");
+                    log("Status: Offline");
 					log(`Node ID: ${nodeId}`);
 					//await checkActiveElement(page);
                 } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
+					log("Account logout!");
 					while (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
 						log('Clicking the extension login button...');
 						await page.click("::-p-xpath(//*[text()='Log in'])");
 						await new Promise((_func) => setTimeout(_func, 10000));
+						if((await browser.pages())[1]) {
+							(await browser.pages())[1].close();
+						}
 						await page.reload();
 					}
-					log("Status: Online!");
 					log(`Node ID: ${nodeId}`);
 				} else {
                     log("Status: Unknown!");
