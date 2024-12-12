@@ -1,5 +1,5 @@
 # Use an official Node.js image as the base image
-FROM node:lts-slim
+FROM node:16-slim
 
 # Install necessary dependencies for Puppeteer and Chromium
 RUN apt-get update && apt-get install -y \
