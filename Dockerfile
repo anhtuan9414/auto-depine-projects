@@ -55,4 +55,4 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 # Run your application when container launches
-CMD [ "npm", "gradient.js" ]
+CMD [ "node", "gradient.js" ]
