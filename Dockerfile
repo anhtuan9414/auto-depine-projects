@@ -44,4 +44,4 @@ RUN npm install
 COPY . .
 
 # Run Xvfb and Puppeteer script
-CMD Xvfb :99 -screen 0 1280x1024x24 & DISPLAY=:99 node gradient.js
+CMD node gradient.js
