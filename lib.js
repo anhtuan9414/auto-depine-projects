@@ -2,6 +2,8 @@ const puppeteer = require("puppeteer-extra");
 const timers = require("node:timers/promises");
 const path = require("path");
 const axios = require("axios");
+const _ = require("lodash");
+const userA = require('./user-agents-gs.json');
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const puppeteerStealth = StealthPlugin();
 // puppeteerStealth.enabledEvasions.delete("user-agent-override");
@@ -25,6 +27,7 @@ const rejectResourceTypes = ["image", "font"];
 const rejectRequestPattern = [];
 let tokenData;
 let nodeId = "N/A";
+let userAgent = _.sample(userA).userAgent;
 
 async function loginBlockmesh({ user, pass }) {
     const { browser, page } = await loginAndOpenExtension(
@@ -87,6 +90,7 @@ async function loginGradient({ user, pass }) {
         waitUntil: "networkidle2",
     });
     let page2 = (await browser.pages())[1];
+	await page2.setUserAgent(userAgent);
     console.log("Go to", "https://app.gradient.network");
     await page2.setRequestInterception(true);
     page2.on("request", (req) => {
@@ -161,6 +165,7 @@ async function loginGradient({ user, pass }) {
     await page.reload();
     console.log("Extension is activated!");
     const page3 = await browser.newPage();
+	await page3.setUserAgent(userAgent);
     page.close();
     return { browser, page: page3 };
 }
@@ -245,6 +250,7 @@ async function reloginGradient({ user, pass }, page, browser) {
         console.log("Logged in successfully!");
     }
     const page2 = await browser.newPage();
+	await page2.setUserAgent(userAgent);
     await page.close();
     await page2.setRequestInterception(true);
     page2.on("request", (req) => {
@@ -287,6 +293,7 @@ async function reloginGradient({ user, pass }, page, browser) {
     await page2.reload();
     console.log("Extension is activated!");
     const page3 = await browser.newPage();
+	await page3.setUserAgent(userAgent);
     page2.close();
     return page3;
 }
@@ -297,6 +304,7 @@ async function loginDawn({ user, pass }) {
         pathToDawn,
     );
     const page2 = await browser.newPage();
+	await page2.setUserAgent(userAgent);
     await page2.goto(DAWN_EXTENSION_URL, {
         timeout: 60000,
         waitUntil: "networkidle2",
@@ -348,7 +356,9 @@ async function loginAndOpenExtension(user, path) {
     });
 
     const page = (await browser.pages())[0];
-    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36");
+	userAgent = _.sample(userA).userAgent;
+	console.log('Set User Agent:', userAgent);
+	await page.setUserAgent(userAgent);
 
     if (proxyUser) {
         await page.authenticate({
@@ -539,6 +549,7 @@ async function gradientWithoutLogin({ user, pass, key }) {
     await new Promise((_func) => setTimeout(_func, 5000));
     (await browser.pages())[0].close();
     const page3 = await browser.newPage();
+	await page3.setUserAgent(userAgent);
     console.log("Extension is activated!");
     return {
         browser,
@@ -655,6 +666,7 @@ const getGraStatus = async (browser, page, user) => {
                     await new Promise((_func) => setTimeout(_func, 5000));
                     value3 = await printStats(page);*/
 					let page2 = await browser.newPage();
+					await page2.setUserAgent(userAgent);
 					console.log("Reloading gradient dashboard...")
 					await page2.goto("https://app.gradient.network", {
 						timeout: 60000,
@@ -686,6 +698,7 @@ const getGraStatus = async (browser, page, user) => {
         }
 		
         const page2 = await browser.newPage();
+		await page2.setUserAgent(userAgent);
         page.close();
         return {
             status: status,
@@ -695,6 +708,7 @@ const getGraStatus = async (browser, page, user) => {
     } catch (error) {
         console.log("Error:", error);
         const page2 = await browser.newPage();
+		await page2.setUserAgent(userAgent);
         page.close();
         return {
             status: false,
