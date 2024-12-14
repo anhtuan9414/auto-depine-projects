@@ -144,8 +144,6 @@ const run = async () => {
 
         log(`Navigating to https://bless.network/dashboard website...`);
         await page.goto('https://bless.network/dashboard', { waitUntil: "load", timeout: 0 });
-
-        await addCookieToLocalStorage(page, cookie);
 		
 		let fileExists = fs.existsSync('blessData.json');
 		if (fileExists) {
@@ -155,6 +153,8 @@ const run = async () => {
 				await removeNode(jsonData.nodeId, cookie);
 			}
 		}
+
+        await addCookieToLocalStorage(page, cookie);
 
         while (!(await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])"))) {
             log(`Refreshing to check login...`);
