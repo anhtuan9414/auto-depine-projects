@@ -43,6 +43,29 @@ const addCookieToLocalStorage = async (page, cookieValue) => {
     log("Your token can be used to log in for 7 days.");
 };
 
+const removeNode = async (nodeId, token) => {
+	await axios.post(
+	  `https://gateway-run.bls.dev/api/v1/nodes/${nodeId}/retire`, 
+	  {},
+	  {
+		headers: {
+		  accept: "*/*",
+		  "accept-language": "en-US,en;q=0.9",
+		  authorization: `Bearer ${token}`,
+		  "content-type": "application/json",
+		  priority: "u=1, i",
+		  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5672.126 Safari/537.36",
+		  "sec-fetch-dest": "empty",
+		  "sec-fetch-mode": "cors",
+		  "sec-fetch-site": "cross-site",
+		  Referer: "https://bless.network/",
+		  "Referrer-Policy": "strict-origin-when-cross-origin"
+		}
+	  }
+	);
+	log("Remove Node ID successfully: ", nodeId);
+}
+
 const run = async () => {
     //setupLogging();
     const secUntilRestart = 60;
@@ -141,6 +164,7 @@ const run = async () => {
 		failed = 0;
         log('Monitoring connection status...');
         setInterval(async () => {
+			let restart = false;
             try {
 				await setPagaInfo();
                 await page.goto(extensionUrl , {waitUntil: "load", timeout: 0});
@@ -175,23 +199,30 @@ const run = async () => {
 					//await checkActiveElement(page);
                 } else if (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
 					log("Account logout!");
-					while (await waitForElementExists(page, "::-p-xpath(//*[text()='Log in'])")) {
-						log('Clicking the extension login button...');
-						await page.click("::-p-xpath(//*[text()='Log in'])");
-						await new Promise((_func) => setTimeout(_func, 10000));
-						if((await browser.pages())[1]) {
-							(await browser.pages())[1].close();
-						}
-						await page.reload();
+					log('Clicking the extension login button...');
+					await page.click("::-p-xpath(//*[text()='Log in'])");
+					await new Promise((_func) => setTimeout(_func, 10000));
+					if((await browser.pages())[1]) {
+						(await browser.pages())[1].close();
 					}
-					log(`Node ID: ${nodeId}`);
+					await page.reload();
+					await new Promise((_func) => setTimeout(_func, 5000));
+					if (!await waitForElementExists(page, "::-p-xpath(//*[text()='Online'])")) {
+						restart = true;
+					}
 				} else {
                     log("Status: Unknown!");
+					restart = true;
                 }
 				failed = 0;
             } catch (err) {
                 log('Error refreshing page:', err);
             }
+			
+			if (restart) {
+				throw "Force restart node";
+			}
+			
 			const page2 = await browser.newPage();
 			page.close();
 			page = page2;
@@ -200,6 +231,7 @@ const run = async () => {
         log(`Error: ${err.message}`);
         if (browser) await browser.close();
         log(`Restarting in ${secUntilRestart} seconds...`);
+		await removeNode(nodeId, cookie);
         setTimeout(run, secUntilRestart * 1000);
     }
 };
