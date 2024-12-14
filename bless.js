@@ -57,7 +57,7 @@ const removeNode = async (nodeId, token) => {
 			  authorization: `Bearer ${token}`,
 			  "content-type": "application/json",
 			  priority: "u=1, i",
-			  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5672.126 Safari/537.36",
+			  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
 			  "sec-fetch-dest": "empty",
 			  "sec-fetch-mode": "cors",
 			  "sec-fetch-site": "cross-site",
