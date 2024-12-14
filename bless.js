@@ -2,6 +2,8 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const puppeteerStealth = StealthPlugin();
 const path = require('path');
+const fs = require('fs');
+const axios = require('axios');
 
 let nodeId = 'N/A';
 
@@ -44,26 +46,30 @@ const addCookieToLocalStorage = async (page, cookieValue) => {
 };
 
 const removeNode = async (nodeId, token) => {
-	await axios.post(
-	  `https://gateway-run.bls.dev/api/v1/nodes/${nodeId}/retire`, 
-	  {},
-	  {
-		headers: {
-		  accept: "*/*",
-		  "accept-language": "en-US,en;q=0.9",
-		  authorization: `Bearer ${token}`,
-		  "content-type": "application/json",
-		  priority: "u=1, i",
-		  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5672.126 Safari/537.36",
-		  "sec-fetch-dest": "empty",
-		  "sec-fetch-mode": "cors",
-		  "sec-fetch-site": "cross-site",
-		  Referer: "https://bless.network/",
-		  "Referrer-Policy": "strict-origin-when-cross-origin"
-		}
-	  }
-	);
-	log("Remove Node ID successfully: ", nodeId);
+	try {
+		await axios.post(
+		  `https://gateway-run.bls.dev/api/v1/nodes/${nodeId}/retire`, 
+		  {},
+		  {
+			headers: {
+			  accept: "*/*",
+			  "accept-language": "en-US,en;q=0.9",
+			  authorization: `Bearer ${token}`,
+			  "content-type": "application/json",
+			  priority: "u=1, i",
+			  "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.5672.126 Safari/537.36",
+			  "sec-fetch-dest": "empty",
+			  "sec-fetch-mode": "cors",
+			  "sec-fetch-site": "cross-site",
+			  Referer: "https://bless.network/",
+			  "Referrer-Policy": "strict-origin-when-cross-origin"
+			}
+		  }
+		);
+		log("Retire Node ID successfully: ", nodeId);
+	} catch (e){
+		log("Retire Node ID failed: ", nodeId);
+	}
 }
 
 const run = async () => {
@@ -105,6 +111,14 @@ const run = async () => {
 	let failed = 0;
 
     try {
+		let fileExists = fs.existsSync('blessData.json');
+		if (fileExists) {
+			const fileContent = fs.readFileSync('blessData.json');
+			const jsonData = JSON.parse(fileContent);
+			if (jsonData.nodeId) {
+				await removeNode(jsonData.nodeId, cookie);
+			}
+		}
         browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = await browser.newPage();
 		
@@ -157,6 +171,14 @@ const run = async () => {
         }
 		
         //await checkActiveElement(page);
+		
+		try {
+		  const jsonData = JSON.stringify({ nodeId: nodeId, token: cookie }, null, 2)
+		  fs.writeFileSync('blessData.json', jsonData, 'utf8');
+		  log('Save bless data file successfully!');
+		} catch (err) {
+		  log('Error save bless data file:', err);
+		}
 
 		const page2 = await browser.newPage();
 		page.close();
@@ -231,7 +253,6 @@ const run = async () => {
         log(`Error: ${err.message}`);
         if (browser) await browser.close();
         log(`Restarting in ${secUntilRestart} seconds...`);
-		await removeNode(nodeId, cookie);
         setTimeout(run, secUntilRestart * 1000);
     }
 };

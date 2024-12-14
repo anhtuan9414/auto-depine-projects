@@ -2,3 +2,4 @@ node_modules/*
 .env
 id_rsa
 temp_*
+blessData.json
