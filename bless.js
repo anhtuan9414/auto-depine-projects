@@ -66,9 +66,9 @@ const removeNode = async (nodeId, token) => {
 			}
 		  }
 		);
-		log("Retire Node ID successfully: ", nodeId);
+		log("Retire Node ID successfully:", nodeId);
 	} catch (e){
-		log("Retire Node ID failed: ", nodeId);
+		log("Retire Node ID failed:", nodeId);
 	}
 }
 
@@ -111,14 +111,6 @@ const run = async () => {
 	let failed = 0;
 
     try {
-		let fileExists = fs.existsSync('blessData.json');
-		if (fileExists) {
-			const fileContent = fs.readFileSync('blessData.json');
-			const jsonData = JSON.parse(fileContent);
-			if (jsonData.nodeId) {
-				await removeNode(jsonData.nodeId, cookie);
-			}
-		}
         browser = await puppeteer.launch({ headless: true, args: browserArgs });
         page = await browser.newPage();
 		
@@ -154,6 +146,15 @@ const run = async () => {
         await page.goto('https://bless.network/dashboard', { waitUntil: "load", timeout: 0 });
 
         await addCookieToLocalStorage(page, cookie);
+		
+		let fileExists = fs.existsSync('blessData.json');
+		if (fileExists) {
+			const fileContent = fs.readFileSync('blessData.json');
+			const jsonData = JSON.parse(fileContent);
+			if (jsonData.nodeId) {
+				await removeNode(jsonData.nodeId, cookie);
+			}
+		}
 
         while (!(await waitForElementExists(page, "::-p-xpath(//*[text()='Connected'])"))) {
             log(`Refreshing to check login...`);
